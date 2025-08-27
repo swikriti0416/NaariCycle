@@ -34,19 +34,19 @@ export default function SymptomsPage() {
   };
 
   return (
-    <div style={{ maxWidth: 700, margin: '0 auto', padding: '2rem 1rem', fontFamily: 'inherit' }}>
+    <div style={{ maxWidth: 700, margin: '0 auto', padding: '2rem 1rem', fontFamily: 'inherit', fontSize: '18px'  }}>
       <h1 style={{ fontSize: '2rem', fontWeight: 700, marginBottom: '2rem' }}>Today</h1>
       <form onSubmit={handleSave}>
         <div style={{ marginBottom: '2rem' }}>
           <div style={{ fontWeight: 600, marginBottom: 8 }}>Symptoms</div>
           {symptomsList.map((symptom) => (
             <div key={symptom} style={{ marginBottom: 8 }}>
-              <label style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#a78bfa' }}>
+              <label style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#831a3bff' }}>
                 <input
                   type="checkbox"
                   checked={symptoms.includes(symptom)}
                   onChange={() => handleSymptomChange(symptom)}
-                  style={{ accentColor: '#a78bfa' }}
+                  style={{ accentColor: '#63092eff' }}
                 />
                 {symptom}
               </label>
@@ -64,11 +64,12 @@ export default function SymptomsPage() {
                 style={{
                   border: '1px solid #e5e7eb',
                   background: mood === m ? '#f3e8ff' : 'transparent',
-                  color: '#6d28d9',
+                  color: '#831a3bff',
                   borderRadius: 8,
                   padding: '6px 18px',
                   cursor: 'pointer',
                   fontWeight: 500,
+                  fontSize: '18px' 
                 }}
               >
                 {m}
@@ -87,11 +88,12 @@ export default function SymptomsPage() {
                 style={{
                   border: '1px solid #e5e7eb',
                   background: flow === f ? '#f3e8ff' : 'transparent',
-                  color: '#6d28d9',
+                  color: '#831a3bff',
                   borderRadius: 8,
                   padding: '6px 18px',
                   cursor: 'pointer',
                   fontWeight: 500,
+                  fontSize: '18px' 
                 }}
               >
                 {f}
@@ -110,11 +112,12 @@ export default function SymptomsPage() {
                 style={{
                   border: '1px solid #e5e7eb',
                   background: pain === p ? '#f3e8ff' : 'transparent',
-                  color: '#6d28d9',
+                  color: '#831a3bff',
                   borderRadius: 8,
                   padding: '6px 18px',
                   cursor: 'pointer',
                   fontWeight: 500,
+                  fontSize: '18px' 
                 }}
               >
                 {p}
@@ -134,8 +137,8 @@ export default function SymptomsPage() {
               border: '1px solid #e5e7eb',
               borderRadius: 8,
               padding: 12,
-              color: '#a78bfa',
-              fontSize: 16,
+              color: '#161617ff',
+              fontSize: '18px' ,
               marginBottom: 8,
               resize: 'vertical',
             }}
@@ -145,13 +148,13 @@ export default function SymptomsPage() {
           <button
             type="submit"
             style={{
-              background: 'linear-gradient(90deg, #f472b6, #a78bfa)',
+              background: 'linear-gradient(90deg, #df266aff, #a78bfa)',
               color: '#fff',
               border: 'none',
               borderRadius: 8,
               padding: '10px 32px',
               fontWeight: 600,
-              fontSize: 16,
+              fontSize: '18px',
               cursor: 'pointer',
               boxShadow: '0 2px 8px rgba(167,139,250,0.08)',
             }}

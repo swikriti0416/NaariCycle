@@ -50,7 +50,7 @@ const SignupPage = () => {
         <div style={{ fontWeight: 'bold', fontSize: '1.2rem' }}>Naaricycle</div>
         <div>
           <Link to="/login" style={{ marginRight: '1rem', color: '#23182a', textDecoration: 'none' }}>Log in</Link>
-          <Link to="/signup" style={{ background: '#e040fb', color: '#fff', borderRadius: '8px', padding: '0.5rem 1.2rem', textDecoration: 'none', fontWeight: 500 }}>Sign up</Link>
+          <Link to="/signup" style={{ background: '#fc4a65ff', color: '#fff', borderRadius: '8px', padding: '0.5rem 1.2rem', textDecoration: 'none', fontWeight: 500 }}>Sign up</Link>
         </div>
       </header>
       <form onSubmit={handleSubmit} style={{ maxWidth: 500, margin: '2rem auto 0 auto', background: 'transparent', padding: '2rem 0', borderRadius: 12, display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
@@ -86,13 +86,13 @@ const SignupPage = () => {
             required
           />
         </div>
-        <button type="submit" style={{ background: '#e040fb', color: '#fff', border: 'none', borderRadius: 10, padding: '1rem', fontWeight: 600, fontSize: '1.1rem', marginTop: '1rem', cursor: 'pointer' }}>Sign up</button>
+        <button type="submit" style={{ background: '#e34474ff', color: '#fff', border: 'none', borderRadius: 10, padding: '1rem', fontWeight: 600, fontSize: '1.1rem', marginTop: '1rem', cursor: 'pointer' }}>Sign up</button>
         <div style={{ textAlign: 'center', color: '#a48bbd', fontSize: 14, marginTop: 8 }}>
           By signing up, you agree to our Terms of Service and Privacy Policy.
         </div>
         <div style={{ textAlign: 'center', marginTop: 8, fontSize: 15 }}>
           Already have an account?{' '}
-          <Link to="/login" style={{ color: '#e040fb', textDecoration: 'underline' }}>Log in</Link>
+          <Link to="/login" style={{ color: '#e15d79ff', textDecoration: 'underline' }}>Log in</Link>
         </div>
       </form>
       <footer style={{ background: '#f5eaf4', height: 30, marginTop: 'auto' }} />

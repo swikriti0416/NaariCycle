@@ -1,7 +1,9 @@
-import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import React from 'react';
+import { Routes, Route } from 'react-router-dom';
 import './styles/App.css';
 import './styles/global.css';
+
+import Navbar from "./components/layout/Navbar";
 import Footer from "./components/layout/Footer.jsx";
 import HomePage from "./pages/HomePage.jsx";
 import Login from "./components/auth/loginform.jsx";
@@ -11,34 +13,34 @@ import SymptomsPage from "./pages/SymptomsPage.jsx";
 import HowItWorksPage from "./landing/HowItWorks.jsx";
 import HeroSection from "./landing/HeroSection.jsx";
 import WaterIntake from "./pages/Waterintake.jsx";
+import AboutTeam from "./landing/Aboutteam.jsx";
+import FeaturesPage from "./landing/Features.jsx";
+import PredictionPage from "./pages/PredictionPage.jsx";
+import SignupPage from './components/auth/signup.jsx';  
 
-
-function App() {
+const App = () => {
   return (
-    <Router>
-      <main className="mt-8">
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Register />} />
-          <Route path="/dashboard" element={<Dashboardpage />} />
-          <Route path="/symptoms" element={<SymptomsPage />} />
-          <Route path="/how-it-works" element={<HowItWorksPage />} />
-          <Route path="/water-intake" element={<WaterIntake />} />
-          <Route path="/prediction" element={<div>Prediction Page</div>} />
-          <Route path="/about" element={<div>About Page</div>} />
-          <Route path="/blog" element={<div>Blog Page</div>} />
-          <Route path="/contact" element={<div>Contact Page</div>} />
-          <Route path="/features" element={<div>Features Page</div>} />
-          <Route path="/privacy" element={<div>Privacy Policy Page</div>} />
-          <Route path="/terms" element={<div>Terms of Use Page</div>} />
-          <Route path="/security" element={<div>Security Page</div>} />
+    <>
+      <Navbar />
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/dashboard" element={<Dashboardpage />} />
+        <Route path="/SymptomsPage" element={<SymptomsPage />} />
+        <Route path="/HowItworks" element={<HowItWorksPage />} />
+        <Route path="/waterintake" element={<WaterIntake />} />
+        <Route path="/Features" element={<FeaturesPage />} />
+        <Route path="/AboutTeam" element={<AboutTeam />} />
+        <Route path="/signup" element={< SignupPage />} />
         
-        </Routes>
-      </main>
-      <Footer />  
-    </Router>
+        
+        {/* Fallback */}
+        <Route path="*" element={<HomePage />} />
+      </Routes>
+      <Footer />
+    </>
   );
-}
+};
 
 export default App;

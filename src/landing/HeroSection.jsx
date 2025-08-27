@@ -97,8 +97,8 @@ const generateCalendarDays = () => {
   for (let day = 1; day <= 31; day++) {
     days.push({
       number: day,
-      isPeriod: [15, 16, 17].includes(day),
-      isOvulation: [29, 31].includes(day),
+      isPeriod: [26, 27, 28].includes(day),
+      isOvulation: [17, 18].includes(day),
       isEmpty: false,
     })
   }

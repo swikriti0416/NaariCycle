@@ -110,7 +110,7 @@ const Footer = () => {
         {/* Footer Bottom */}
         <div style={footerBottomStyles}>
           <div style={copyrightStyles}>
-            <span>© 2024 NaariCycle. Made with </span>
+            <span>© 2025 NaariCycle. Made with </span>
             <span style={heartStyles}>❤️</span>
             <span> by Nepali students for Nepali women.</span>
           </div>
