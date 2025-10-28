@@ -2,6 +2,7 @@ import HeroSection from '../components/HeroSection'
 import Features from '../components/Features'
 import HowItWorks from '../components/HowItWorks'
 import AboutTeam from '../components/Aboutteam'
+import Footer from '../components/layout/Footer'
 
 export default function HomePage() {
   return (
@@ -18,6 +19,7 @@ export default function HomePage() {
       <div id="AboutTeam">
         <AboutTeam />
       </div>
+      <Footer />
     </div>
   )
 }

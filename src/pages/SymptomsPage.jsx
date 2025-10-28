@@ -1,47 +1,41 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 
-const symptomsList = ['Cramps', 'Headache', 'Fatigue', 'Bloating', 'Breast tenderness', 'Mood swings'];
-const moods = ['Happy', 'Sad', 'Irritable', 'Anxious', 'Energetic', 'Calm'];
-const flows = ['Spotting', 'Light', 'Medium', 'Heavy'];
-const pains = ['None', 'Mild', 'Moderate', 'Severe'];
+const symptomsList = ["Cramps", "Headache", "Fatigue", "Bloating", "Breast tenderness", "Mood swings"];
+const moods = ["Happy", "Sad", "Irritable", "Anxious", "Energetic", "Calm"];
+const flows = ["Spotting", "Light", "Medium", "Heavy"];
+const pains = ["None", "Mild", "Moderate", "Severe"];
 
 export default function SymptomsPage() {
   const [symptoms, setSymptoms] = useState([]);
-  const [mood, setMood] = useState('');
-  const [flow, setFlow] = useState('');
-  const [pain, setPain] = useState('');
-  const [notes, setNotes] = useState('');
+  const [mood, setMood] = useState("");
+  const [flow, setFlow] = useState("");
+  const [pain, setPain] = useState("");
+  const [notes, setNotes] = useState("");
 
   const handleSymptomChange = (symptom) => {
-    setSymptoms(prev =>
-      prev.includes(symptom) ? prev.filter(s => s !== symptom) : [...prev, symptom]
+    setSymptoms((prev) =>
+      prev.includes(symptom) ? prev.filter((s) => s !== symptom) : [...prev, symptom]
     );
   };
 
   const handleSave = (e) => {
     e.preventDefault();
-    // TODO: handle save logic
-    alert('Saved!');
+    alert("Saved!");
   };
 
   // Reusable button group component
   const ButtonGroup = ({ options, selected, onSelect }) => (
-    <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-      {options.map(option => (
+    <div className="flex flex-wrap gap-3">
+      {options.map((option) => (
         <button
-          type="button"
           key={option}
+          type="button"
           onClick={() => onSelect(option)}
-          style={{
-            border: '1px solid #e5e7eb',
-            background: selected === option ? '#f3e8ff' : 'transparent',
-            color: '#831a3bff',
-            borderRadius: 8,
-            padding: '6px 18px',
-            cursor: 'pointer',
-            fontWeight: 500,
-            fontSize: 18,
-          }}
+          className={`px-5 py-2 rounded-lg font-medium text-lg border transition ${
+            selected === option
+              ? "bg-purple-100 text-purple-700 border-purple-300"
+              : "bg-transparent text-purple-800 border-gray-300 hover:bg-purple-50"
+          }`}
         >
           {option}
         </button>
@@ -50,83 +44,63 @@ export default function SymptomsPage() {
   );
 
   return (
-    <div style={{ maxWidth: 700, margin: '0 auto', padding: '2rem 1rem', fontFamily: 'inherit', fontSize: 18 }}>
-      <h1 style={{ fontSize: '2rem', fontWeight: 700, marginBottom: '2rem' }}>Today</h1>
-      <form onSubmit={handleSave}>
+    <div className="max-w-3xl mx-auto p-6 sm:p-10 font-sans text-gray-900">
+      <h1 className="text-3xl sm:text-4xl font-extrabold mb-10">Today</h1>
 
-        {/* Symptoms Section */}
-        <div style={{ marginBottom: '2rem' }}>
-          <div style={{ fontWeight: 600, marginBottom: 8 }}>Symptoms</div>
-          {symptomsList.map(symptom => (
-            <label
-              key={symptom}
-              style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8, color: '#831a3bff' }}
-            >
-              <input
-                type="checkbox"
-                checked={symptoms.includes(symptom)}
-                onChange={() => handleSymptomChange(symptom)}
-                style={{ accentColor: '#63092eff' }}
-              />
-              {symptom}
-            </label>
-          ))}
+      <form onSubmit={handleSave} className="space-y-8">
+
+        {/* Symptoms */}
+        <div>
+          <h2 className="font-semibold mb-3 text-purple-700">Symptoms</h2>
+          <div className="flex flex-col gap-2">
+            {symptomsList.map((symptom) => (
+              <label key={symptom} className="flex items-center gap-3 text-purple-800">
+                <input
+                  type="checkbox"
+                  checked={symptoms.includes(symptom)}
+                  onChange={() => handleSymptomChange(symptom)}
+                  className="accent-purple-600 w-5 h-5"
+                />
+                {symptom}
+              </label>
+            ))}
+          </div>
         </div>
 
-        {/* Mood Section */}
-        <div style={{ marginBottom: '2rem' }}>
-          <div style={{ fontWeight: 600, marginBottom: 8 }}>Mood</div>
+        {/* Mood */}
+        <div>
+          <h2 className="font-semibold mb-3 text-purple-700">Mood</h2>
           <ButtonGroup options={moods} selected={mood} onSelect={setMood} />
         </div>
 
-        {/* Flow Section */}
-        <div style={{ marginBottom: '2rem' }}>
-          <div style={{ fontWeight: 600, marginBottom: 8 }}>Flow</div>
+        {/* Flow */}
+        <div>
+          <h2 className="font-semibold mb-3 text-purple-700">Flow</h2>
           <ButtonGroup options={flows} selected={flow} onSelect={setFlow} />
         </div>
 
-        {/* Pain Section */}
-        <div style={{ marginBottom: '2rem' }}>
-          <div style={{ fontWeight: 600, marginBottom: 8 }}>Pain</div>
+        {/* Pain */}
+        <div>
+          <h2 className="font-semibold mb-3 text-purple-700">Pain</h2>
           <ButtonGroup options={pains} selected={pain} onSelect={setPain} />
         </div>
 
-        {/* Notes Section */}
-        <div style={{ marginBottom: '2rem' }}>
-          <div style={{ fontWeight: 600, marginBottom: 8 }}>Notes</div>
+        {/* Notes */}
+        <div>
+          <h2 className="font-semibold mb-3 text-purple-700">Notes</h2>
           <textarea
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
             placeholder="Add notes about your day"
-            style={{
-              width: '100%',
-              minHeight: 80,
-              border: '1px solid #e5e7eb',
-              borderRadius: 8,
-              padding: 12,
-              color: '#161617ff',
-              fontSize: 18,
-              marginBottom: 8,
-              resize: 'vertical',
-            }}
+            className="w-full min-h-20 border border-gray-300 rounded-lg p-4 text-lg focus:outline-none focus:ring-2 focus:ring-purple-200 resize-y"
           />
         </div>
 
         {/* Save Button */}
-        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+        <div className="flex justify-end">
           <button
             type="submit"
-            style={{
-              background: 'linear-gradient(90deg, #df266aff, #a78bfa)',
-              color: '#fff',
-              border: 'none',
-              borderRadius: 8,
-              padding: '10px 32px',
-              fontWeight: 600,
-              fontSize: 18,
-              cursor: 'pointer',
-              boxShadow: '0 2px 8px rgba(167,139,250,0.08)',
-            }}
+            className="px-10 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold rounded-lg shadow hover:opacity-90 transition"
           >
             Save
           </button>

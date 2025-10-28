@@ -54,12 +54,12 @@ const HeroSection = () => {
               Get Started <span>→</span>
             </Link>
 
-            {/* <Link
-              to="/login"
-              className="border border-pink-600 text-pink-600 font-semibold px-6 py-3 rounded-lg hover:bg-pink-50 transition-all duration-200"
+            <Link
+              to="/prediction"
+              className="border border-pink-600 text-pink-600 font-bold px-6 py-3 rounded-lg hover:bg-pink-50 transition-all duration-200"
             >
-              Login / Sign Up
-            </Link> */}
+              Predict Your Cycle
+            </Link>
           </div>
         </div>
 
