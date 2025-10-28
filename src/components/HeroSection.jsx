@@ -28,7 +28,7 @@ const HeroSection = () => {
     <section className="bg-pink-50 py-20 min-h-[90vh] flex items-center">
       <div className="container mx-auto px-6 grid md:grid-cols-2 gap-20 items-center">
         {/* LEFT: Text Content */}
-        <div className="max-w-lg">
+        <div className="max-w-lg pl-10">
           <p className="text-pink-600 text-sm md:text-base font-semibold mb-6 tracking-wide uppercase">
             Built by Nepali students for Nepali women
           </p>
@@ -64,8 +64,8 @@ const HeroSection = () => {
         </div>
 
         {/* RIGHT: Calendar */}
-        <div className="flex justify-center items-center">
-          <div className="bg-white rounded-2xl p-6 shadow-lg w-full max-w-sm">
+        <div className="flex justify-center items-center pl-20">
+          <div className="bg-white rounded-2xl p-6 shadow-pink-400 shadow-lg w-full max-w-sm">
             {/* Calendar Header */}
             <div className="text-center mb-4">
               <h3 className="text-lg font-semibold text-gray-800">March 2024</h3>
