@@ -6,13 +6,13 @@ import Login from "./components/auth/loginform.jsx";
 import Register from "./components/auth/signup.jsx";
 import Dashboardpage from "./pages/Dashboardpage.jsx";
 import SymptomsPage from "./pages/SymptomsPage.jsx";
-import HowItWorksPage from "./landing/HowItWorks.jsx";
-import HeroSection from "./landing/HeroSection.jsx";
 import WaterIntake from "./pages/Waterintake.jsx";
-import AboutTeam from "./landing/Aboutteam.jsx";
-import FeaturesPage from "./landing/Features.jsx";
 import PredictionPage from "./pages/PredictionPage.jsx";
-import SignupPage from './components/auth/signup.jsx';  
+// import HowItWorksPage from "./landing/HowItWorks.jsx";
+// import HeroSection from "./landing/HeroSection.jsx";
+// import AboutTeam from "./landing/Aboutteam.jsx";
+// import FeaturesPage from "./landing/Features.jsx";
+// import SignupPage from './components/auth/signup.jsx';  
 
 const App = () => {
   return (
@@ -21,19 +21,16 @@ const App = () => {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
+        <Route path="/signup" element={<Register />} /> 
         <Route path="/dashboard" element={<Dashboardpage />} />
-        <Route path="/SymptomsPage" element={<SymptomsPage />} />
-        <Route path="/HowItworks" element={<HowItWorksPage />} />
-        <Route path="/waterintake" element={<WaterIntake />} />
-        <Route path="/Features" element={<FeaturesPage />} />
-        <Route path="/AboutTeam" element={<AboutTeam />} />
-        <Route path="/signup" element={< SignupPage />} />
-        
+        <Route path="/symptoms" element={<SymptomsPage />} />
+        <Route path="/water-intake" element={<WaterIntake />} />
+        <Route path="/prediction" element={<PredictionPage />} />
         
         {/* Fallback */}
         <Route path="*" element={<HomePage />} />
       </Routes>
+
       <Footer />
     </>
   );
