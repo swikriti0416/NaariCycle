@@ -25,7 +25,7 @@ const HeroSection = () => {
   const days = generateCalendarDays();
 
   return (
-    <section className="bg-pink-50 py-20 min-h-[90vh] flex items-center">
+    <section className="bg-pink-50 py-5 min-h-[90vh] flex items-center">
       <div className="container mx-auto px-6 grid md:grid-cols-2 gap-20 items-center">
         {/* LEFT: Text Content */}
         <div className="max-w-lg pl-10">
@@ -65,25 +65,29 @@ const HeroSection = () => {
 
         {/* RIGHT: Calendar */}
         
-        <div className="flex justify-center items-center flex-col pl-20">
-            <Link
-              to="/dashboard"
-              className="bg-pink-600 text-white font-semibold px-6 py-3 mb-10 rounded-lg shadow-md hover:bg-pink-700 transition-all duration-200 flex items-center gap-2"
-            >
-              Dashboard
-            </Link>
-          <div className="bg-white rounded-2xl p-6 shadow-pink-400 shadow-lg w-full max-w-sm">
+        <div className="flex flex-col items-center px-4 sm:px-20 py-10 bg-pink-50 min-h-screen">
+          {/* Dashboard Button */}
+          <Link
+            to="/dashboard"
+            className="bg-pink-600 text-white text-lg font-bold tracking-wider px-20 py-3 rounded-xl shadow-lg hover:bg-pink-700 transition flex items-center mb-4 animate-bounce"
+          >
+            Dashboard
+          </Link>
+
+          {/* Calendar Card */}
+          <div className="bg-white rounded-3xl p-6 shadow-xl w-full max-w-md border border-pink-300">
+            
             {/* Calendar Header */}
-            <div className="text-center mb-4">
-              <h3 className="text-lg font-semibold text-gray-800">Nov 2025</h3>
+            <div className="text-center mb-6">
+              <h3 className="text-xl sm:text-2xl font-bold text-gray-800">Nov 2025</h3>
             </div>
 
-            {/* Weekdays Header */}
-            <div className="grid grid-cols-7 gap-1 mb-2">
+            {/* Weekdays */}
+            <div className="grid grid-cols-7 gap-2 mb-4 ">
               {["S", "M", "T", "W", "T", "F", "S"].map((day, i) => (
                 <div
                   key={i}
-                  className="text-center text-xs font-medium text-gray-500 py-2"
+                  className="text-center text-sm font-medium text-gray-500 py-2"
                 >
                   {day}
                 </div>
@@ -91,18 +95,18 @@ const HeroSection = () => {
             </div>
 
             {/* Days Grid */}
-            <div className="grid grid-cols-7 gap-1 mb-4">
+            <div className="grid grid-cols-7 gap-2 mb-6">
               {days.map((day, i) => (
                 <div
                   key={i}
-                  className={`text-center py-2 text-sm font-medium rounded-lg flex items-center justify-center min-h-10 transition-all
+                  className={`flex items-center justify-center h-10 w-10 rounded-lg text-sm font-medium transition-all
                     ${
                       day.isEmpty
                         ? "bg-transparent cursor-default"
                         : day.isPeriod
-                        ? "bg-pink-600 text-white font-semibold"
+                        ? "bg-pink-600 text-white font-semibold shadow-md"
                         : day.isOvulation
-                        ? "bg-pink-300 text-white font-semibold"
+                        ? "bg-pink-300 text-white font-semibold shadow-sm"
                         : "text-gray-800 hover:bg-pink-100 cursor-pointer"
                     }`}
                 >
@@ -118,10 +122,9 @@ const HeroSection = () => {
               </span>
               <div className="flex items-center justify-center">
                 <svg
-                  width="20"
-                  height="20"
+                  className="w-5 h-5 text-pink-500"
+                  fill="currentColor"
                   viewBox="0 0 24 24"
-                  fill="#ec4899"
                 >
                   <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
                 </svg>
