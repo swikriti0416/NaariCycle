@@ -64,11 +64,18 @@ const HeroSection = () => {
         </div>
 
         {/* RIGHT: Calendar */}
-        <div className="flex justify-center items-center pl-20">
+        
+        <div className="flex justify-center items-center flex-col pl-20">
+            <Link
+              to="/dashboard"
+              className="bg-pink-600 text-white font-semibold px-6 py-3 mb-10 rounded-lg shadow-md hover:bg-pink-700 transition-all duration-200 flex items-center gap-2"
+            >
+              Dashboard
+            </Link>
           <div className="bg-white rounded-2xl p-6 shadow-pink-400 shadow-lg w-full max-w-sm">
             {/* Calendar Header */}
             <div className="text-center mb-4">
-              <h3 className="text-lg font-semibold text-gray-800">March 2024</h3>
+              <h3 className="text-lg font-semibold text-gray-800">Nov 2025</h3>
             </div>
 
             {/* Weekdays Header */}

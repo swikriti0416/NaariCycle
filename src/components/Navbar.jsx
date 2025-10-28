@@ -83,7 +83,7 @@ const Navbar = () => {
           
           {isSignedIn ? (
             <div className="relative group">
-              <RouterLink to="/prediction">
+              <RouterLink to="/dashboard">
                 <img
                   src={user?.imageUrl || fallbackImage}
                   alt={user?.firstName || "Profile"}
