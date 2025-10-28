@@ -1,17 +1,25 @@
-import HeroSection from '../landing/HeroSection'
-import Features from    '../landing/Features'
-import HowItWorks from '../landing/HowItWorks'
-import AboutTeam from '../landing/Aboutteam'
-const HomePage = () => {
+import HeroSection from '../components/HeroSection'
+import Features from '../components/Features'
+import HowItWorks from '../components/HowItWorks'
+import AboutTeam from '../components/Aboutteam'
+import Footer from '../components/Footer'
+
+export default function HomePage() {
   return (
     <div>
-      <HeroSection />
-      <Features />
-      <HowItWorks />
-      <AboutTeam />
+      <div id="hero">
+        <HeroSection />
+      </div>
+      <div id="Features">
+        <Features />
+      </div>
+      <div id="HowItWorks">
+        <HowItWorks />
+      </div>
+      <div id="AboutTeam">
+        <AboutTeam />
+      </div>
+      <Footer />
     </div>
   )
 }
-
-export default HomePage
-

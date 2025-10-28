@@ -1,44 +1,114 @@
-import React from 'react';
-import { Routes, Route } from 'react-router-dom';
-import './styles/App.css';
-import './styles/global.css';
-
-import Navbar from "./components/layout/Navbar";
-import Footer from "./components/layout/Footer.jsx";
+import { Routes, Route, Navigate } from 'react-router-dom';
+import Navbar from "./components/Navbar";
 import HomePage from "./pages/HomePage.jsx";
-import Login from "./components/auth/loginform.jsx";
-import Register from "./components/auth/signup.jsx";
+import Login from "./pages/auth/loginpage.jsx";
+import Register from "./pages/auth/signup.jsx";
 import Dashboardpage from "./pages/Dashboardpage.jsx";
 import SymptomsPage from "./pages/SymptomsPage.jsx";
-import HowItWorksPage from "./landing/HowItWorks.jsx";
-import HeroSection from "./landing/HeroSection.jsx";
 import WaterIntake from "./pages/Waterintake.jsx";
-import AboutTeam from "./landing/Aboutteam.jsx";
-import FeaturesPage from "./landing/Features.jsx";
-import PredictionPage from "./pages/PredictionPage.jsx";
-import SignupPage from './components/auth/signup.jsx';  
+import PredictionsPage from './pages/Predictionpage.jsx';
+import { useAuth } from '@clerk/clerk-react';
 
+// 🔒 ProtectedRoute Component
+function ProtectedRoute({ children }) {
+  const { isSignedIn, isLoaded } = useAuth();
+
+  if (!isLoaded) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div>Loading...</div>
+      </div>
+    );
+  }
+
+  if (!isSignedIn) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return children;
+}
+
+// 🌐 PublicRoute Component
+function PublicRoute({ children }) {
+  const { isSignedIn, isLoaded } = useAuth();
+
+  if (!isLoaded) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div>Loading...</div>
+      </div>
+    );
+  }
+
+  if (isSignedIn) {
+    return <Navigate to="/" replace />;
+  }
+
+  return children;
+}
+
+// 🌟 Main App Component
 const App = () => {
   return (
     <>
       <Navbar />
       <Routes>
+        {/* Public Routes */}
         <Route path="/" element={<HomePage />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/dashboard" element={<Dashboardpage />} />
-        <Route path="/SymptomsPage" element={<SymptomsPage />} />
-        <Route path="/HowItworks" element={<HowItWorksPage />} />
-        <Route path="/waterintake" element={<WaterIntake />} />
-        <Route path="/Features" element={<FeaturesPage />} />
-        <Route path="/AboutTeam" element={<AboutTeam />} />
-        <Route path="/signup" element={< SignupPage />} />
-        
-        
+        <Route
+          path="/login"
+          element={
+            <PublicRoute>
+              <Login />
+            </PublicRoute>
+          }
+        />
+        <Route
+          path="/signup"
+          element={
+            <PublicRoute>
+              <Register />
+            </PublicRoute>
+          }
+        />
+
+        {/* Protected Routes */}
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <Dashboardpage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/symptoms"
+          element={
+            <ProtectedRoute>
+              <SymptomsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/waterintake"
+          element={
+            <ProtectedRoute>
+              <WaterIntake />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/prediction"
+          element={
+            <ProtectedRoute>
+              <PredictionsPage />
+            </ProtectedRoute>
+          }
+        />
+
         {/* Fallback */}
         <Route path="*" element={<HomePage />} />
       </Routes>
-      <Footer />
     </>
   );
 };
