@@ -60,7 +60,7 @@ const PredictionsPage = () => {
 
           <div className="flex items-center gap-6 p-4 bg-pink-100 rounded-lg">
             <div
-              className="w-4 h-4 rounded-full flex-shrink-0"
+              className="w-4 h-4 rounded-full"
               style={{ backgroundColor: predictions.currentPhase.color }}
             ></div>
             <div>
@@ -102,14 +102,14 @@ const PredictionsPage = () => {
               <div className="text-gray-500 mb-4">{p.daysUntil && `in ${p.daysUntil} days`}</div>
               {p.confidence && (
                 <div className="flex items-center gap-3 justify-center">
-                  <span className="text-gray-500 text-sm min-w-[80px]">Confidence:</span>
+                  <span className="text-gray-500 text-sm min-w-20">Confidence:</span>
                   <div className="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
                     <div
                       className="h-full rounded-full bg-pink-600"
                       style={{ width: `${p.confidence}%` }}
                     ></div>
                   </div>
-                  <span className="text-pink-600 font-semibold min-w-[40px]">{p.confidence}%</span>
+                  <span className="text-pink-600 font-semibold min-w-10">{p.confidence}%</span>
                 </div>
               )}
               {!p.confidence && (

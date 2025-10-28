@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 const DashboardPage = () => {
   return (
     <div className="min-h-screen bg-pink-50 py-10">
@@ -40,12 +42,11 @@ const DashboardPage = () => {
         <div className="text-center">
           <h2 className="text-pink-600 font-semibold text-2xl mb-6">Quick Actions</h2>
           <div className="flex flex-wrap justify-center gap-4">
-            <button className="bg-pink-600 text-white px-6 py-2 rounded-lg shadow hover:bg-pink-700 transition">
-              Log Symptoms
-            </button>
-            <button className="bg-white text-pink-600 border border-pink-600 px-6 py-2 rounded-lg shadow hover:bg-pink-50 transition">
-              Track Habits
-            </button>
+            <Link to={'/symptoms'}>
+              <button className="bg-pink-600 text-white px-6 py-2 rounded-lg shadow hover:bg-pink-700 transition">
+                Log Symptoms
+              </button>
+            </Link>
             <button className="bg-white text-pink-600 border border-pink-600 px-6 py-2 rounded-lg shadow hover:bg-pink-50 transition">
               View Calendar
             </button>

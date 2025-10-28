@@ -1,12 +1,12 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
-import Navbar from "./components/layout/Navbar";
+import Navbar from "./components/Navbar";
 import HomePage from "./pages/HomePage.jsx";
 import Login from "./pages/auth/loginpage.jsx";
 import Register from "./pages/auth/signup.jsx";
 import Dashboardpage from "./pages/Dashboardpage.jsx";
 import SymptomsPage from "./pages/SymptomsPage.jsx";
 import WaterIntake from "./pages/Waterintake.jsx";
-import PredictionPage from "./pages/PredictionPage.jsx";
+import PredictionsPage from './pages/Predictionpage.jsx';
 import { useAuth } from '@clerk/clerk-react';
 
 // 🔒 ProtectedRoute Component
@@ -101,7 +101,7 @@ const App = () => {
           path="/prediction"
           element={
             <ProtectedRoute>
-              <PredictionPage />
+              <PredictionsPage />
             </ProtectedRoute>
           }
         />
