@@ -7,7 +7,7 @@ import Header from './Header';
 const AppLayout = ({ children }) => {
   return (
     <div className="app-layout">
-      <Navbar />
+      {/* <Navbar /> */}
       <main className="main-content">
         {children}
       </main>
