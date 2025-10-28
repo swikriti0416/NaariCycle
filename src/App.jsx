@@ -24,7 +24,7 @@ const App = () => {
         <Route path="/signup" element={<Register />} /> 
         <Route path="/dashboard" element={<Dashboardpage />} />
         <Route path="/symptoms" element={<SymptomsPage />} />
-        <Route path="/water-intake" element={<WaterIntake />} />
+        <Route path="/waterintake" element={<WaterIntake />} />
         <Route path="/prediction" element={<PredictionPage />} />
         
         {/* Fallback */}

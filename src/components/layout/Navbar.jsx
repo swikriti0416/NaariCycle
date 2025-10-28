@@ -7,12 +7,12 @@ const Navbar = () => {
   const location = useLocation();
 
   const navData = [
-  { label: 'Home', to: 'hero', route: '/' },  
-  { label: 'Features', to: 'Features', route: '/' },
-  { label: 'How It Works', to: 'HowItWorks', route: '/' },
-  { label: 'Log Symptoms', route: '/symptoms' },
-  { label: 'Water Intake', route: '/water-intake' },
-];
+    { label: 'Home', to: 'hero', route: '/' },  
+    { label: 'Features', to: 'Features', route: '/' },
+    { label: 'How It Works', to: 'HowItWorks', route: '/' },
+    { label: 'Log Symptoms', to: 'symptoms', route: '/symptoms' },
+    { label: 'Water Intake', to: 'waterintake', route: '/waterintake' },
+  ];
 
   const isHome = location.pathname === '/';
 
@@ -27,9 +27,10 @@ const Navbar = () => {
           Naaricycle
         </RouterLink>
 
+        {/* Desktop Menu */}
         <div className="hidden md:flex items-center gap-8">
-          {navData.map(({ label, to }) =>
-            isHome ? (
+          {navData.map(({ label, to, route }) =>
+            isHome && to !== 'symptoms' && to !== 'waterintake' ? (
               <ScrollLink
                 key={to}
                 to={to}
@@ -41,7 +42,11 @@ const Navbar = () => {
                 {label}
               </ScrollLink>
             ) : (
-              <RouterLink key={to} to={route || '/'} className="text-white text-base font-medium hover:text-pink-100">
+              <RouterLink 
+                key={to} 
+                to={route} 
+                className="text-white text-base font-medium hover:text-pink-100"
+              >
                 {label}
               </RouterLink>
             )
@@ -53,7 +58,7 @@ const Navbar = () => {
           <RouterLink to="/login" className="px-5 py-2 text-white font-medium hover:text-pink-800 hover:bg-opacity-10 rounded-lg transition-all duration-200">
             Login
           </RouterLink>
-          <RouterLink to="/Signup" className="px-5 py-2 bg-white text-pink-700 rounded-lg font-semibold hover:bg-pink-800 hover:text-white transition-all duration-200 shadow-md">
+          <RouterLink to="/signup" className="px-5 py-2 bg-white text-pink-700 rounded-lg font-semibold hover:bg-pink-800 hover:text-white transition-all duration-200 shadow-md">
             Sign Up
           </RouterLink>
         </div>
@@ -71,8 +76,8 @@ const Navbar = () => {
       {isOpen && (
         <div className="md:hidden bg-pink-600 bg-opacity-90 px-6 py-4">
           <div className="flex flex-col space-y-3">
-            {navData.map(({ label, to }) =>
-              isHome ? (
+            {navData.map(({ label, to, route }) =>
+              isHome && to !== 'symptoms' && to !== 'waterintake' ? (
                 <ScrollLink
                   key={to}
                   to={to}
@@ -87,7 +92,7 @@ const Navbar = () => {
               ) : (
                 <RouterLink
                   key={to}
-                  to="/"
+                  to={route}
                   onClick={() => setIsOpen(false)}
                   className="block text-white text-base font-medium px-3 py-2 rounded-md hover:bg-white hover:bg-opacity-20"
                 >
@@ -99,14 +104,14 @@ const Navbar = () => {
             <RouterLink
               to="/login"
               onClick={() => setIsOpen(false)}
-              className=" text-white text-center px-3 py-2 rounded-md hover:bg-white hover:bg-opacity-20 transition"
+              className="text-white text-center px-3 py-2 rounded-md hover:bg-white hover:bg-opacity-20 transition"
             >
               Login
             </RouterLink>
             <RouterLink
-              to="/Signup"
+              to="/signup"
               onClick={() => setIsOpen(false)}
-              className=" bg-white text-pink-700 text-center px-3 py-2 rounded-md font-semibold shadow-md"
+              className="bg-white text-pink-700 text-center px-3 py-2 rounded-md font-semibold shadow-md"
             >
               Sign Up
             </RouterLink>
