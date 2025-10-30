@@ -8,6 +8,8 @@ import SymptomsPage from "./pages/SymptomsPage.jsx";
 import WaterIntake from "./pages/Waterintake.jsx";
 import PredictionsPage from './pages/Predictionpage.jsx';
 import { useAuth } from '@clerk/clerk-react';
+import Predictform from './pages/Predictform.jsx';
+
 
 // 🔒 ProtectedRoute Component
 function ProtectedRoute({ children }) {
@@ -101,7 +103,7 @@ const App = () => {
           path="/prediction"
           element={
             <ProtectedRoute>
-              <PredictionsPage />
+              <Predictform />
             </ProtectedRoute>
           }
         />
