@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Calendar, Droplets, Clock, ChevronRight, Sparkles, Info } from 'lucide-react';
 
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 export default function OnboardingForm() {
   const [formData, setFormData] = useState({
     avgCycleLength: '28',
@@ -64,7 +65,7 @@ export default function OnboardingForm() {
 
     try {
       // Submit to backend
-      const response = await fetch('http://localhost:5000/api/onboarding', {
+      const response = await fetch(`${API_BASE_URL}/onboarding`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
