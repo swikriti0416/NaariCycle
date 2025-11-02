@@ -1,12 +1,42 @@
-# React + Vite
+# 🌸 Naaricycle – Menstrual Cycle & Fertility Tracker
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+**Naaricycle** is a modern web application that helps users track their menstrual cycle, ovulation, and fertile window using personalized predictions.  
+This repository contains the **frontend** built with **React + Vite**, offering a clean, intuitive, and responsive interface for cycle tracking.
 
-Currently, two official plugins are available:
+> 🌺 *Empowering Women’s Health — Naaricycle combines data-driven insights with a simple, elegant experience.*
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## Expanding the ESLint configuration
+## 🚀 Features
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- ⚛️ **React + Vite** for fast, lightweight frontend performance  
+- 🗓️ **Cycle Tracking** – log periods and symptoms easily  
+- 🤖 **Predictive Insights** – ovulation, fertile window, and next period prediction  
+- 💬 **Detailed Guidance** – health tips and reminders based on cycle data  
+- 🎨 **Modern UI/UX** – Tailwind CSS styling, clean forms, and smooth animations  
+- 🔔 **Notifications & Reminders** – upcoming periods and fertile days  
+
+---
+
+## 🧰 Tech Stack
+
+| Layer | Technology |
+|-------|-------------|
+| **Frontend Framework** | React (Vite) |
+| **Styling** | Tailwind CSS |
+| **Icons** | React Icons |
+| **API Communication** | Fetch / Axios |
+| **Backend (Prediction)** | Flask (Python) |
+| **ML Libraries (Backend)** | Scikit-learn, Pandas, NumPy |
+
+---
+
+## 🔗 API Integration
+
+The frontend communicates with a Flask backend for predicting periods, ovulation, and fertile windows.
+
+Create a `.env` file in your project root and add your backend URL:
+
+```bash
+VITE_API_URL=http://127.0.0.1:5000
+```
