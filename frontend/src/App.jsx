@@ -14,6 +14,7 @@ import Predictform from './pages/Predictform.jsx';
 // 🔒 ProtectedRoute Component
 function ProtectedRoute({ children }) {
   const { isSignedIn, isLoaded } = useAuth();
+  console.log('User signed in?', isSignedIn, 'Loaded?', isLoaded);
 
   if (!isLoaded) {
     return (
@@ -105,6 +106,14 @@ const App = () => {
             <ProtectedRoute>
               <Predictform />
             </ProtectedRoute>
+          }
+        />
+         <Route
+          path="/predictionpage"
+          element={
+            <PublicRoute>
+              <PredictionsPage />
+            </PublicRoute>
           }
         />
 

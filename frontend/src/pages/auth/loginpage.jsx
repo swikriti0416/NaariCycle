@@ -1,68 +1,66 @@
+// src/pages/LoginPage.jsx
 import React, { useState } from "react";
-import { useSignIn, useClerk } from "@clerk/clerk-react";
+import { useSignIn } from "@clerk/clerk-react";
 import { FcGoogle } from "react-icons/fc";
 import { FaApple, FaFacebook } from "react-icons/fa6";
 
-export default function Login() {
-  const { signIn, isLoaded, setActive } = useSignIn();
-  const { navigate } = useClerk();
+export default function LoginPage() {
+  const { isLoaded, signIn, setActive } = useSignIn();
   const [form, setForm] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   if (!isLoaded) return null;
 
+  // Email/password login
   const handleEmailLogin = async (e) => {
-  e.preventDefault();
-  setLoading(true);
-  setError("");
+    e.preventDefault();
+    setLoading(true);
+    setError("");
 
-  try {
-    // Start sign in
-    const signInResult = await signIn.create({
-      identifier: form.email,
-      password: form.password,
-    });
+    try {
+      const signInResult = await signIn.create({
+        identifier: form.email,
+        password: form.password,
+      });
 
-    if (signInResult.status === "complete") {
-      // Activate the session to log the user in
-      await setActive({ session: signInResult.createdSessionId });
-      window.location.href = "/Homepage"; // redirect after login
-    } else if (signInResult.status === "needs_email_verification") {
-      setError("Please verify your email before logging in.");
-    } else {
-      setError("Unexpected sign-in state. Please try again.");
-      console.log(signInResult);
+      if (signInResult.status === "complete") {
+        await setActive({ session: signInResult.createdSessionId });
+        window.location.href = "/Homepage";
+      } else {
+        setError("Please verify your email or complete login.");
+      }
+    } catch (err) {
+      console.error("Login error:", err);
+      setError(err.errors?.[0]?.message || "Invalid email or password.");
+    } finally {
+      setLoading(false);
     }
-  } catch (err) {
-    console.error("Login error:", err.errors?.[0]?.message || err.message);
-    setError("Invalid email or password. Please try again.");
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
-  // Handle OAuth login
+  // OAuth login
   const handleOAuth = async (provider) => {
+    setError("");
     try {
       await signIn.authenticateWithRedirect({
         strategy: provider,
-        redirectUrl: "/sso-callback",
+        redirectUrl: "/Homepage", // Redirect directly to homepage
         redirectUrlComplete: "/Homepage",
       });
     } catch (err) {
       console.error("OAuth redirect error:", err);
+      setError("OAuth login failed. Please try again.");
     }
   };
 
   return (
-    <div className="flex flex-col justify-center items-center bg-pink-100 font-text px-4 py-15">
-      <div className="w-full max-w-md  bg-pink-300 backdrop-blur-sm shadow-lg shadow-gray-300 rounded-2xl p-8 space-y-6 border border-white/30">
+    <div className="flex flex-col justify-center items-center bg-pink-100 font-text px-4 py-16 min-h-screen">
+      <div className="w-full max-w-md bg-pink-300 backdrop-blur-sm shadow-lg rounded-2xl p-8 space-y-6 border border-white/30">
         {/* Header */}
         <div className="text-center">
           <h1 className="text-3xl font-bold text-[#1d1d22] mb-2">Welcome Back</h1>
           <p className="text-sm text-[#ffffff] font-medium">
-            Sign in to your health hub, where your well-being is our priority!
+            Sign in to your health hub!
           </p>
         </div>
 
@@ -85,17 +83,13 @@ export default function Login() {
             required
           />
 
-          {error && (
-            <p className="text-red-500 text-sm text-center font-medium">{error}</p>
-          )}
+          {error && <p className="text-red-500 text-sm text-center font-medium">{error}</p>}
 
           <button
             type="submit"
             disabled={loading}
-            className={`w-full py-2 rounded-lg text-white font-semibold transition-all duration-300 ${
-              loading
-                ? "bg-gray-400 cursor-not-allowed"
-                : "bg-[#0699e2] hover:bg-[#1b7fb0]"
+            className={`w-full py-2 rounded-lg text-white font-semibold ${
+              loading ? "bg-gray-400 cursor-not-allowed" : "bg-[#0699e2] hover:bg-[#1b7fb0]"
             }`}
           >
             {loading ? "Signing in..." : "Login"}

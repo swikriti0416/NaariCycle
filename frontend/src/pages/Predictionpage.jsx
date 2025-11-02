@@ -1,159 +1,218 @@
-"use client";
+import React, { useEffect, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { Calendar, Heart, TrendingUp, AlertCircle } from 'lucide-react';
 
-import { useState } from "react";
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 const PredictionsPage = () => {
-  const [currentCycleDay] = useState(20);
-  const [cycleLength] = useState(28);
+  const location = useLocation();
+  const navigate = useNavigate();
+  
+  const [prediction, setPrediction] = useState(location.state?.prediction || null);
+  const [loading, setLoading] = useState(!prediction);
+  const [error, setError] = useState('');
 
-  const predictions = {
-    nextPeriod: { date: "March 15, 2024", daysUntil: 5, confidence: 92 },
-    nextOvulation: { date: "March 29, 2024", daysUntil: 19, confidence: 88 },
-    fertileWindow: { start: "March 27, 2024", end: "April 1, 2024", daysUntil: 17 },
-    currentPhase: {
-      name: "Luteal Phase",
-      description: "Your body is preparing for your next cycle. You might experience PMS symptoms.",
-      color: "#B794F6",
-    },
+  useEffect(() => {
+    if (!prediction) fetchPrediction();
+  }, []);
+
+  const fetchPrediction = async () => {
+    try {
+      setLoading(true);
+      setError('');
+
+      const userId = 1; // Replace with actual auth user ID
+      const response = await fetch(`${API_BASE_URL}/predictions/${userId}`, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+      });
+
+      if (!response.ok) {
+        if (response.status === 404) {
+          setError('No predictions found. Redirecting to onboarding...');
+          setTimeout(() => navigate('/onboarding'), 3000);
+          return;
+        }
+        throw new Error(`Failed to fetch prediction: ${response.status}`);
+      }
+
+      const data = await response.json();
+      setPrediction(data.prediction);
+    } catch (err) {
+      setError(err.message || 'Failed to load prediction data');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const cycleHistory = [
-    { month: "Feb 2024", length: 29, predicted: 28, accuracy: 96 },
-    { month: "Jan 2024", length: 27, predicted: 28, accuracy: 96 },
-    { month: "Dec 2023", length: 28, predicted: 28, accuracy: 100 },
-    { month: "Nov 2023", length: 30, predicted: 28, accuracy: 93 },
-    { month: "Oct 2023", length: 28, predicted: 29, accuracy: 96 },
-  ];
+  const formatDate = (dateString) =>
+    new Date(dateString).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
 
-  const getPhaseProgress = () => (currentCycleDay / cycleLength) * 100;
+  const getDaysUntil = (dateString) => {
+    const target = new Date(dateString);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    target.setHours(0, 0, 0, 0);
+    return Math.ceil((target - today) / (1000 * 60 * 60 * 24));
+  };
+
+  const getFertilityColor = (status) => {
+    switch (status?.toLowerCase()) {
+      case 'high': return 'text-red-600 bg-red-50';
+      case 'medium': return 'text-yellow-600 bg-yellow-50';
+      case 'low': return 'text-green-600 bg-green-50';
+      default: return 'text-gray-600 bg-gray-50';
+    }
+  };
+
+  const getConfidenceColor = (confidence) => {
+    if (confidence >= 85) return 'text-green-600';
+    if (confidence >= 70) return 'text-yellow-600';
+    return 'text-orange-600';
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-pink-50 via-purple-50 to-blue-50">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-pink-600 mx-auto mb-4"></div>
+          <p className="text-gray-600 text-lg">Loading your predictions...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-pink-50 via-purple-50 to-blue-50 p-4">
+        <div className="bg-white rounded-xl shadow-lg p-8 max-w-md w-full text-center">
+          <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">Oops!</h2>
+          <p className="text-gray-600 mb-6">{error}</p>
+          <button
+            onClick={() => navigate('/onboarding')}
+            className="bg-pink-600 text-white px-6 py-3 rounded-lg hover:bg-pink-700 transition"
+          >
+            Go to Onboarding
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (!prediction) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-pink-50 via-purple-50 to-blue-50">
+        <p className="text-gray-600">No prediction data available.</p>
+      </div>
+    );
+  }
+
+  const daysUntilPeriod = getDaysUntil(prediction.predicted_start);
+  const daysUntilOvulation = getDaysUntil(prediction.ovulation_date);
 
   return (
-    <div className="min-h-screen bg-pink-50 py-10">
-      <div className="container mx-auto px-4">
-
+    <div className="min-h-screen py-10 px-4 bg-gradient-to-br from-pink-50 via-purple-50 to-blue-50">
+      <div className="container mx-auto max-w-5xl">
         {/* Header */}
-        <div className="text-center mb-16">
-          <h1 className="text-4xl font-extrabold text-gray-900 mb-4">Your Cycle Predictions</h1>
+        <div className="text-center mb-12">
+          <h1 className="text-5xl font-extrabold text-gray-900 mb-4">Your Cycle Predictions</h1>
           <p className="text-gray-600 max-w-3xl mx-auto text-lg">
-            AI-powered predictions based on your unique cycle patterns using advanced linear regression algorithms
+            AI-powered predictions based on your unique cycle patterns
           </p>
         </div>
 
-        {/* Current Cycle Overview */}
-        <div className="bg-white rounded-xl shadow-lg p-8 mb-12">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-semibold text-gray-900">Current Cycle Overview</h2>
-            <div className="text-gray-500 text-lg">
-              Day <span className="text-pink-600 font-bold">{currentCycleDay}</span> of {cycleLength}
-            </div>
+        {/* Next Period Card */}
+        <div className="bg-white rounded-2xl shadow-2xl p-8 mb-8 border-t-4 border-pink-500">
+          <div className="flex items-center gap-3 mb-6">
+            <Calendar className="w-8 h-8 text-pink-600" />
+            <h2 className="text-3xl font-bold text-gray-900">Next Period</h2>
           </div>
 
-          <div className="mb-6">
-            <div className="w-full h-3 bg-gray-200 rounded-full overflow-hidden mb-2">
-              <div
-                className="h-full rounded-full transition-all"
-                style={{ width: `${getPhaseProgress()}%`, backgroundColor: predictions.currentPhase.color }}
-              ></div>
-            </div>
-            <div className="text-center text-gray-500 text-sm">{Math.round(getPhaseProgress())}% Complete</div>
-          </div>
-
-          <div className="flex items-center gap-6 p-4 bg-pink-100 rounded-lg">
-            <div
-              className="w-4 h-4 rounded-full"
-              style={{ backgroundColor: predictions.currentPhase.color }}
-            ></div>
+          <div className="grid md:grid-cols-2 gap-6">
             <div>
-              <h3 className="text-lg font-semibold text-gray-900">{predictions.currentPhase.name}</h3>
-              <p className="text-gray-600">{predictions.currentPhase.description}</p>
+              <p className="text-5xl font-bold text-pink-600 mb-2">{formatDate(prediction.predicted_start)}</p>
+              <p className="text-2xl text-gray-600">
+                {daysUntilPeriod > 0 ? `In ${daysUntilPeriod} days` : daysUntilPeriod === 0 ? 'Today' : `${Math.abs(daysUntilPeriod)} days ago`}
+              </p>
             </div>
-          </div>
-        </div>
 
-        {/* Predictions Grid */}
-        <div className="grid gap-8 md:grid-cols-3 mb-12">
-          {[
-            {
-              icon: "🩸",
-              title: "Next Period",
-              date: predictions.nextPeriod.date,
-              daysUntil: predictions.nextPeriod.daysUntil,
-              confidence: predictions.nextPeriod.confidence,
-            },
-            {
-              icon: "🥚",
-              title: "Next Ovulation",
-              date: predictions.nextOvulation.date,
-              daysUntil: predictions.nextOvulation.daysUntil,
-              confidence: predictions.nextOvulation.confidence,
-            },
-            {
-              icon: "🌸",
-              title: "Fertile Window",
-              date: `${predictions.fertileWindow.start} - ${predictions.fertileWindow.end}`,
-              daysUntil: predictions.fertileWindow.daysUntil,
-              confidence: null,
-            },
-          ].map((p, idx) => (
-            <div key={idx} className="bg-white shadow rounded-xl p-6 text-center">
-              <div className="text-4xl mb-4">{p.icon}</div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">{p.title}</h3>
-              <div className="text-pink-600 font-bold mb-1">{p.date}</div>
-              <div className="text-gray-500 mb-4">{p.daysUntil && `in ${p.daysUntil} days`}</div>
-              {p.confidence && (
-                <div className="flex items-center gap-3 justify-center">
-                  <span className="text-gray-500 text-sm min-w-20">Confidence:</span>
-                  <div className="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
-                    <div
-                      className="h-full rounded-full bg-pink-600"
-                      style={{ width: `${p.confidence}%` }}
-                    ></div>
-                  </div>
-                  <span className="text-pink-600 font-semibold min-w-10">{p.confidence}%</span>
-                </div>
-              )}
-              {!p.confidence && (
-                <div className="flex justify-between text-gray-500 text-sm mt-4">
-                  <span>Current Status:</span>
-                  <span className="font-semibold text-gray-900">Low Fertility</span>
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
-
-        {/* Tips Section */}
-        <div className="bg-white shadow-lg rounded-xl p-8">
-          <h2 className="text-2xl font-semibold text-gray-900 text-center mb-8">Personalized Tips</h2>
-          <div className="grid gap-8 md:grid-cols-3">
-            {[
-              {
-                icon: "💧",
-                title: "Stay Hydrated",
-                desc: "Increase water intake during your luteal phase to reduce bloating",
-              },
-              {
-                icon: "🧘‍♀️",
-                title: "Manage Stress",
-                desc: "Practice meditation to help regulate your cycle naturally",
-              },
-              {
-                icon: "🥗",
-                title: "Nutrition Focus",
-                desc: "Include iron-rich foods in your diet before your period",
-              },
-            ].map((tip, idx) => (
-              <div key={idx} className="flex items-start gap-4">
-                <div className="text-3xl mt-1">{tip.icon}</div>
-                <div>
-                  <h4 className="text-lg font-semibold text-gray-900 mb-1">{tip.title}</h4>
-                  <p className="text-gray-600 text-sm">{tip.desc}</p>
-                </div>
+            <div className="space-y-3">
+              <div className="flex items-center justify-between bg-gray-50 p-4 rounded-lg">
+                <span className="text-gray-700 font-medium">Confidence</span>
+                <span className={`text-2xl font-bold ${getConfidenceColor(prediction.confidence)}`}>{prediction.confidence}%</span>
               </div>
-            ))}
+              <div className="flex items-center justify-between bg-gray-50 p-4 rounded-lg">
+                <span className="text-gray-700 font-medium">Cycle Day</span>
+                <span className="text-2xl font-bold text-purple-600">Day {prediction.cycle_day}</span>
+              </div>
+              <div className="flex items-center justify-between bg-gray-50 p-4 rounded-lg">
+                <span className="text-gray-700 font-medium">Method</span>
+                <span className="text-sm text-gray-600 capitalize">{prediction.method?.replace('_', ' ')}</span>
+              </div>
+            </div>
           </div>
         </div>
 
+        {/* Ovulation Card */}
+        <div className="bg-white rounded-2xl shadow-lg p-8 mb-8">
+          <div className="flex items-center gap-3 mb-6">
+            <Heart className="w-8 h-8 text-red-500" />
+            <h3 className="text-3xl font-bold text-gray-900">Ovulation</h3>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-6">
+            <div>
+              <p className="text-lg text-gray-600 mb-2">Next Ovulation Date</p>
+              <p className="text-4xl font-bold text-red-500 mb-2">{formatDate(prediction.ovulation_date)}</p>
+              <p className="text-xl text-gray-600">
+                {daysUntilOvulation > 0 ? `In ${daysUntilOvulation} days` : daysUntilOvulation === 0 ? 'Today' : `${Math.abs(daysUntilOvulation)} days ago`}
+              </p>
+            </div>
+
+            <div className="flex items-center">
+              <div className={`flex-1 p-6 rounded-xl ${getFertilityColor(prediction.fertility_status)}`}>
+                <p className="text-sm font-medium mb-2">Fertility Status</p>
+                <p className="text-3xl font-bold capitalize">{prediction.fertility_status}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Cycle Info Card */}
+        <div className="bg-white rounded-2xl shadow-lg p-8">
+          <div className="flex items-center gap-3 mb-6">
+            <TrendingUp className="w-8 h-8 text-blue-500" />
+            <h3 className="text-2xl font-bold text-gray-900">Cycle Information</h3>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-6">
+            <div className="bg-blue-50 p-6 rounded-xl">
+              <p className="text-gray-700 mb-2">Average Cycle Length</p>
+              <p className="text-4xl font-bold text-blue-600">{prediction.avg_cycle_length} <span className="text-xl">days</span></p>
+            </div>
+            <div className="bg-purple-50 p-6 rounded-xl">
+              <p className="text-gray-700 mb-2">Average Period Length</p>
+              <p className="text-4xl font-bold text-purple-600">{prediction.avg_period_length} <span className="text-xl">days</span></p>
+            </div>
+          </div>
+        </div>
+
+        {/* Actions */}
+        <div className="mt-8 flex gap-4 justify-center">
+          <button
+            onClick={() => navigate('/onboarding')}
+            className="bg-pink-600 text-white px-8 py-3 rounded-lg hover:bg-pink-700 transition font-medium"
+          >
+            Update Cycle Data
+          </button>
+          <button
+            onClick={fetchPrediction}
+            className="bg-gray-200 text-gray-700 px-8 py-3 rounded-lg hover:bg-gray-300 transition font-medium"
+          >
+            Refresh Predictions
+          </button>
+        </div>
       </div>
     </div>
   );
