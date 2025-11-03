@@ -13,32 +13,46 @@ const DashboardPage = () => {
 
   // Fetch user's prediction data
   const fetchPredictionData = async () => {
-    if (!user) return;
-    setLoading(true);
-    setError(null);
+  setLoading(true);
+  setError(null);
 
-    try {
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL || "http://localhost:5000"}/predictions/${user.sub}`,
-        { headers: { "Content-Type": "application/json" } }
-      );
-
-      if (!response.ok) {
-        throw new Error("No prediction data found. Please complete onboarding first.");
+  try {
+    const response = await fetch(
+      `${import.meta.env.VITE_API_URL || "http://localhost:5000"}/predictions`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          // Include Auth0 token if you need backend auth
+          // "Authorization": `Bearer ${await getAccessTokenSilently()}`,
+        },
+        credentials: "include", // ensures cookies are sent if your backend uses sessions
       }
+    );
 
-      const data = await response.json();
-      setPredictionData(data.prediction || null);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
+    // Handle HTTP errors
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.error || "Failed to fetch prediction data.");
     }
-  };
+
+    const data = await response.json();
+
+    if (!data.prediction) {
+      throw new Error("No prediction data found. Please complete onboarding first.");
+    }
+
+    setPredictionData(data.prediction);
+  } catch (err) {
+    setError(err.message);
+    setPredictionData(null);
+  } finally {
+    setLoading(false);
+  }
+};
 
   useEffect(() => {
-    if (!isAuthenticated || !user) return;
-    fetchPredictionData();
+    if (isAuthenticated && user) fetchPredictionData();
   }, [isAuthenticated, user]);
 
   // Days until a date
@@ -46,7 +60,6 @@ const DashboardPage = () => {
     if (!dateString) return "-";
     const targetDate = new Date(dateString);
     const today = new Date();
-    if (isNaN(targetDate)) return "-";
     const diffTime = targetDate.setHours(0, 0, 0, 0) - today.setHours(0, 0, 0, 0);
     return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
   };
@@ -55,14 +68,12 @@ const DashboardPage = () => {
   const formatDate = (dateString) => {
     if (!dateString) return "-";
     const date = new Date(dateString);
-    if (isNaN(date)) return "-";
-    return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+    return isNaN(date) ? "-" : date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
   };
 
   // Fertility badge color
   const getFertilityColor = (status) => {
-    const normalized = status?.toLowerCase();
-    switch (normalized) {
+    switch (status?.toLowerCase()) {
       case "high":
         return "bg-red-100 text-red-700";
       case "medium":
@@ -158,9 +169,7 @@ const DashboardPage = () => {
               <h3 className="text-purple-600 font-semibold text-lg">Cycle Day</h3>
               <Activity className="w-6 h-6 text-purple-500" />
             </div>
-            <p className="text-3xl font-bold text-gray-800 mb-2">
-              Day {predictionData?.cycle_day ?? "-"}
-            </p>
+            <p className="text-3xl font-bold text-gray-800 mb-2">Day {predictionData?.cycle_day ?? "-"}</p>
             <p className="text-gray-500">
               of {predictionData?.avg_cycle_length ?? "-"}-day cycle
             </p>
@@ -232,8 +241,20 @@ const DashboardPage = () => {
               <span className="font-semibold text-gray-800">{predictionData?.avg_cycle_length ?? "-"} days</span>
             </div>
             <div className="flex justify-between items-center">
+              <span className="text-gray-600">Period Length</span>
+              <span className="font-semibold text-gray-800">{predictionData?.avg_period_length ?? "-"} days</span>
+            </div>
+            <div className="flex justify-between items-center">
               <span className="text-gray-600">Cycle Day</span>
               <span className="font-semibold text-gray-800">Day {predictionData?.cycle_day ?? "-"}</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-gray-600">Prediction Confidence</span>
+              <span className="font-semibold text-gray-800">{predictionData?.confidence ?? "-"}%</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-gray-600">Method</span>
+              <span className="font-semibold text-gray-800">{predictionData?.method ?? "-"}</span>
             </div>
           </div>
         </div>
