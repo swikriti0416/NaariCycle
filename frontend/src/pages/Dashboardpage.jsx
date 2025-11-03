@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { Calendar, Droplets, Heart, TrendingUp, Activity, RefreshCw } from "lucide-react";
 
 const DashboardPage = () => {
-  const { user, isAuthenticated, logout, isLoading } = useAuth0();
+  const { user, isAuthenticated, isLoading } = useAuth0();
   const navigate = useNavigate();
 
   const [predictionData, setPredictionData] = useState(null);

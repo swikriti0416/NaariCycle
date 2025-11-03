@@ -4,7 +4,7 @@ import { Calendar, Heart, TrendingUp, AlertCircle } from 'lucide-react';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
-const PredictionsPage = () => {
+const Dashboard = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -12,16 +12,15 @@ const PredictionsPage = () => {
   const [loading, setLoading] = useState(!prediction);
   const [error, setError] = useState('');
 
-  // Replace this with your auth logic
-  const userId = 1; 
+  // Replace with your auth/user logic
+  const userId = 1;
 
   const fetchPrediction = useCallback(async () => {
-    if (loading) return; // prevent double fetch
     try {
       setLoading(true);
       setError('');
 
-      const response = await fetch(`${API_BASE_URL}/predictions/${userId}`, {
+      const response = await fetch(`${API_BASE_URL}/predictions`, {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' },
       });
@@ -42,12 +41,13 @@ const PredictionsPage = () => {
     } finally {
       setLoading(false);
     }
-  }, [userId, navigate, loading]);
+  }, [userId, navigate]);
 
   useEffect(() => {
     if (!prediction) fetchPrediction();
   }, [prediction, fetchPrediction]);
 
+  // Helpers
   const formatDate = (dateString) => {
     if (!dateString) return '-';
     const date = new Date(dateString);
@@ -79,170 +79,151 @@ const PredictionsPage = () => {
     return 'text-orange-600';
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-pink-50 via-purple-50 to-blue-50">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-pink-600 mx-auto mb-4"></div>
-          <p className="text-gray-600 text-lg">Loading your predictions...</p>
-        </div>
+  // Loading state
+  if (loading) return (
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-pink-50 via-purple-50 to-blue-50">
+      <div className="text-center">
+        <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-pink-600 mx-auto mb-4"></div>
+        <p className="text-gray-600 text-lg">Loading your predictions...</p>
       </div>
-    );
-  }
+    </div>
+  );
 
-  if (error) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-pink-50 via-purple-50 to-blue-50 p-4">
-        <div className="bg-white rounded-xl shadow-lg p-8 max-w-md w-full text-center">
-          <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Oops!</h2>
-          <p className="text-gray-600 mb-6">{error}</p>
-          <button
-            onClick={() => navigate('/onboarding')}
-            className="bg-pink-600 text-white px-6 py-3 rounded-lg hover:bg-pink-700 transition"
-          >
-            Go to Onboarding
-          </button>
-        </div>
+  // Error state
+  if (error) return (
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-pink-50 via-purple-50 to-blue-50 p-4">
+      <div className="bg-white rounded-xl shadow-lg p-8 max-w-md w-full text-center">
+        <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">Oops!</h2>
+        <p className="text-gray-600 mb-6">{error}</p>
+        <button
+          onClick={() => navigate('/onboarding')}
+          className="bg-pink-600 text-white px-6 py-3 rounded-lg hover:bg-pink-700 transition"
+        >
+          Go to Onboarding
+        </button>
       </div>
-    );
-  }
+    </div>
+  );
 
-  if (!prediction) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-pink-50 via-purple-50 to-blue-50">
-        <p className="text-gray-600">No prediction data available.</p>
-      </div>
-    );
-  }
+  if (!prediction) return (
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-pink-50 via-purple-50 to-blue-50">
+      <p className="text-gray-600">No prediction data available.</p>
+    </div>
+  );
 
   const daysUntilPeriod = getDaysUntil(prediction.predicted_start);
   const daysUntilOvulation = getDaysUntil(prediction.ovulation_date);
 
   return (
-    <div className="min-h-screen py-10 px-4 bg-linear-to-br from-pink-50 via-purple-50 to-blue-50">
-      <div className="container mx-auto max-w-5xl">
+    <div className="min-h-screen py-10 px-4 bg-gradient-to-br from-pink-50 via-purple-50 to-blue-50">
+      <div className="container mx-auto max-w-6xl grid gap-10">
+
         {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-5xl font-extrabold text-gray-900 mb-4">Your Cycle Predictions</h1>
-          <p className="text-gray-600 max-w-3xl mx-auto text-lg">
-            AI-powered predictions based on your unique cycle patterns
-          </p>
-        </div>
+        <header className="text-center mb-10">
+          <h1 className="text-5xl font-extrabold text-gray-900 mb-4">Your Prediction Result</h1>
+        </header>
 
-        {/* Next Period Card */}
-        <div className="bg-white rounded-2xl shadow-2xl p-8 mb-8 border-t-4 border-pink-500">
-          <div className="flex items-center gap-3 mb-6">
-            <Calendar className="w-8 h-8 text-pink-600" />
-            <h2 className="text-3xl font-bold text-gray-900">Next Period</h2>
-          </div>
+        {/* Cards Grid */}
+        <div className="grid md:grid-cols-3 gap-8">
 
-          <div className="grid md:grid-cols-2 gap-6">
+          {/* Next Period Card */}
+          <div className="bg-white rounded-2xl shadow-lg p-6 border-t-4 border-pink-500 flex flex-col justify-between">
             <div>
-              <p className="text-5xl font-bold text-pink-600 mb-2">{formatDate(prediction.predicted_start)}</p>
-              <p className="text-2xl text-gray-600">
+              <div className="flex items-center gap-2 mb-4">
+                <Calendar className="w-6 h-6 text-pink-600" />
+                <h2 className="text-2xl font-bold text-gray-900">Next Period</h2>
+              </div>
+              <p className="text-3xl font-bold text-pink-600">{formatDate(prediction.predicted_start)}</p>
+              <p className="text-gray-600 mt-2">
                 {typeof daysUntilPeriod === 'number'
-                  ? daysUntilPeriod > 0
-                    ? `In ${daysUntilPeriod} days`
-                    : daysUntilPeriod === 0
-                      ? 'Today'
+                  ? daysUntilPeriod > 0 ? `In ${daysUntilPeriod} days`
+                    : daysUntilPeriod === 0 ? 'Today'
                       : `${Math.abs(daysUntilPeriod)} days ago`
                   : '-'}
               </p>
             </div>
-
-            <div className="space-y-3">
-              <div className="flex items-center justify-between bg-gray-50 p-4 rounded-lg">
-                <span className="text-gray-700 font-medium">Confidence</span>
-                <span className={`text-2xl font-bold ${getConfidenceColor(prediction.confidence)}`}>
-                  {prediction.confidence ?? '-'}%
-                </span>
+            <div className="mt-6 space-y-2">
+              <div className="flex justify-between text-gray-700 font-medium">
+                <span>Confidence</span>
+                <span className={`font-bold ${getConfidenceColor(prediction.confidence)}`}>{prediction.confidence ?? '-'}%</span>
               </div>
-              <div className="flex items-center justify-between bg-gray-50 p-4 rounded-lg">
-                <span className="text-gray-700 font-medium">Cycle Day</span>
-                <span className="text-2xl font-bold text-purple-600">
-                  Day {prediction.cycle_day ?? '-'}
-                </span>
+              <div className="flex justify-between text-gray-700 font-medium">
+                <span>Cycle Day</span>
+                <span className="font-bold text-purple-600">Day {prediction.cycle_day ?? '-'}</span>
               </div>
-              <div className="flex items-center justify-between bg-gray-50 p-4 rounded-lg">
-                <span className="text-gray-700 font-medium">Method</span>
-                <span className="text-sm text-gray-600 capitalize">
-                  {prediction.method?.replace('_', ' ') ?? '-'}
-                </span>
+              <div className="flex justify-between text-gray-700 font-medium">
+                <span>Method</span>
+                <span className="capitalize">{prediction.method?.replace('_', ' ') ?? '-'}</span>
               </div>
             </div>
           </div>
-        </div>
 
-        {/* Ovulation Card */}
-        <div className="bg-white rounded-2xl shadow-lg p-8 mb-8">
-          <div className="flex items-center gap-3 mb-6">
-            <Heart className="w-8 h-8 text-red-500" />
-            <h3 className="text-3xl font-bold text-gray-900">Ovulation</h3>
-          </div>
-
-          <div className="grid md:grid-cols-2 gap-6">
+          {/* Ovulation Card */}
+          <div className="bg-white rounded-2xl shadow-lg p-6 flex flex-col justify-between">
             <div>
-              <p className="text-lg text-gray-600 mb-2">Next Ovulation Date</p>
-              <p className="text-4xl font-bold text-red-500 mb-2">{formatDate(prediction.ovulation_date)}</p>
-              <p className="text-xl text-gray-600">
+              <div className="flex items-center gap-2 mb-4">
+                <Heart className="w-6 h-6 text-red-500" />
+                <h2 className="text-2xl font-bold text-gray-900">Ovulation</h2>
+              </div>
+              <p className="text-gray-600 mb-2">Next Ovulation Date</p>
+              <p className="text-3xl font-bold text-red-500">{formatDate(prediction.ovulation_date)}</p>
+              <p className="text-gray-600 mt-1">
                 {typeof daysUntilOvulation === 'number'
-                  ? daysUntilOvulation > 0
-                    ? `In ${daysUntilOvulation} days`
-                    : daysUntilOvulation === 0
-                      ? 'Today'
+                  ? daysUntilOvulation > 0 ? `In ${daysUntilOvulation} days`
+                    : daysUntilOvulation === 0 ? 'Today'
                       : `${Math.abs(daysUntilOvulation)} days ago`
                   : '-'}
               </p>
             </div>
+            <div className={`mt-6 p-4 rounded-xl text-center ${getFertilityColor(prediction.fertility_status)}`}>
+              <p className="text-sm font-medium mb-1">Fertility Status</p>
+              <p className="text-2xl font-bold capitalize">{prediction.fertility_status ?? '-'}</p>
+            </div>
+          </div>
 
-            <div className="flex items-center">
-              <div className={`flex-1 p-6 rounded-xl ${getFertilityColor(prediction.fertility_status)}`}>
-                <p className="text-sm font-medium mb-2">Fertility Status</p>
-                <p className="text-3xl font-bold capitalize">{prediction.fertility_status ?? '-'}</p>
+          {/* Cycle Info Card */}
+          <div className="bg-white rounded-2xl shadow-lg p-6 flex flex-col justify-between">
+            <div>
+              <div className="flex items-center gap-2 mb-4">
+                <TrendingUp className="w-6 h-6 text-blue-500" />
+                <h2 className="text-2xl font-bold text-gray-900">Cycle Info</h2>
+              </div>
+              <div className="grid gap-4">
+                <div className="bg-blue-50 p-4 rounded-lg text-center">
+                  <p className="text-gray-700 mb-1">Average Cycle Length</p>
+                  <p className="text-2xl font-bold text-blue-600">{prediction.avg_cycle_length ?? '-'} days</p>
+                </div>
+                <div className="bg-purple-50 p-4 rounded-lg text-center">
+                  <p className="text-gray-700 mb-1">Average Period Length</p>
+                  <p className="text-2xl font-bold text-purple-600">{prediction.avg_period_length ?? '-'} days</p>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
-        {/* Cycle Info Card */}
-        <div className="bg-white rounded-2xl shadow-lg p-8">
-          <div className="flex items-center gap-3 mb-6">
-            <TrendingUp className="w-8 h-8 text-blue-500" />
-            <h3 className="text-2xl font-bold text-gray-900">Cycle Information</h3>
-          </div>
-
-          <div className="grid md:grid-cols-2 gap-6">
-            <div className="bg-blue-50 p-6 rounded-xl">
-              <p className="text-gray-700 mb-2">Average Cycle Length</p>
-              <p className="text-4xl font-bold text-blue-600">{prediction.avg_cycle_length ?? '-'} <span className="text-xl">days</span></p>
-            </div>
-            <div className="bg-purple-50 p-6 rounded-xl">
-              <p className="text-gray-700 mb-2">Average Period Length</p>
-              <p className="text-4xl font-bold text-purple-600">{prediction.avg_period_length ?? '-'} <span className="text-xl">days</span></p>
-            </div>
-          </div>
         </div>
 
         {/* Actions */}
-        <div className="mt-8 flex gap-4 justify-center">
+        <div className="mt-10 flex justify-center gap-4">
           <button
-            onClick={() => navigate('/onboarding')}
-            className="bg-pink-600 text-white px-8 py-3 rounded-lg hover:bg-pink-700 transition font-medium"
+            onClick={() => navigate('/prediction')}
+            className="bg-pink-600 text-white px-6 py-3 rounded-lg hover:bg-pink-700 transition font-medium"
           >
             Update Cycle Data
           </button>
           <button
             onClick={fetchPrediction}
             disabled={loading}
-            className="bg-gray-200 text-gray-700 px-8 py-3 rounded-lg hover:bg-gray-300 transition font-medium disabled:opacity-50"
+            className="bg-gray-200 text-gray-700 px-6 py-3 rounded-lg hover:bg-gray-300 transition font-medium disabled:opacity-50"
           >
             Refresh Predictions
           </button>
         </div>
+
       </div>
     </div>
   );
 };
 
-export default PredictionsPage;
+export default Dashboard;

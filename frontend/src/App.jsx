@@ -111,9 +111,9 @@ const App = () => {
         <Route
           path="/predictionpage"
           element={
-            <PublicRoute>
+            <ProtectedRoute>
               <PredictionsPage />
-            </PublicRoute>
+            </ProtectedRoute>
           }
         />
 

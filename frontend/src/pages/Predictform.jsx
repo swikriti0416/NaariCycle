@@ -101,7 +101,7 @@ export default function OnboardingForm() {
   };
 
   return (
-    <div className="p-8 bg-gradient-to-br from-pink-50 to-pink-100 rounded-2xl shadow-lg w-full max-w-xl mx-auto">
+    <div className="p-8 mt-10 bg-gradient-to-br from-pink-50 to-pink-100 rounded-2xl shadow-lg w-full max-w-xl mx-auto border-2xl">
       <h1 className="text-3xl font-semibold mb-6 text-center text-pink-700">
         Tell us about your cycle
       </h1>
