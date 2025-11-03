@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Calendar, Heart, TrendingUp, AlertCircle } from 'lucide-react';
 
@@ -7,21 +7,20 @@ const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 const PredictionsPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  
+
   const [prediction, setPrediction] = useState(location.state?.prediction || null);
   const [loading, setLoading] = useState(!prediction);
   const [error, setError] = useState('');
 
-  useEffect(() => {
-    if (!prediction) fetchPrediction();
-  }, []);
+  // Replace this with your auth logic
+  const userId = 1; 
 
-  const fetchPrediction = async () => {
+  const fetchPrediction = useCallback(async () => {
+    if (loading) return; // prevent double fetch
     try {
       setLoading(true);
       setError('');
 
-      const userId = 1; // Replace with actual auth user ID
       const response = await fetch(`${API_BASE_URL}/predictions/${userId}`, {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' },
@@ -30,25 +29,33 @@ const PredictionsPage = () => {
       if (!response.ok) {
         if (response.status === 404) {
           setError('No predictions found. Redirecting to onboarding...');
-          setTimeout(() => navigate('/onboarding'), 3000);
+          setTimeout(() => navigate('/onboarding'), 1500);
           return;
         }
         throw new Error(`Failed to fetch prediction: ${response.status}`);
       }
 
       const data = await response.json();
-      setPrediction(data.prediction);
+      setPrediction(data.prediction || null);
     } catch (err) {
       setError(err.message || 'Failed to load prediction data');
     } finally {
       setLoading(false);
     }
+  }, [userId, navigate, loading]);
+
+  useEffect(() => {
+    if (!prediction) fetchPrediction();
+  }, [prediction, fetchPrediction]);
+
+  const formatDate = (dateString) => {
+    if (!dateString) return '-';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
   };
 
-  const formatDate = (dateString) =>
-    new Date(dateString).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-
   const getDaysUntil = (dateString) => {
+    if (!dateString) return '-';
     const target = new Date(dateString);
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -66,6 +73,7 @@ const PredictionsPage = () => {
   };
 
   const getConfidenceColor = (confidence) => {
+    if (!confidence) return 'text-gray-600';
     if (confidence >= 85) return 'text-green-600';
     if (confidence >= 70) return 'text-yellow-600';
     return 'text-orange-600';
@@ -133,22 +141,34 @@ const PredictionsPage = () => {
             <div>
               <p className="text-5xl font-bold text-pink-600 mb-2">{formatDate(prediction.predicted_start)}</p>
               <p className="text-2xl text-gray-600">
-                {daysUntilPeriod > 0 ? `In ${daysUntilPeriod} days` : daysUntilPeriod === 0 ? 'Today' : `${Math.abs(daysUntilPeriod)} days ago`}
+                {typeof daysUntilPeriod === 'number'
+                  ? daysUntilPeriod > 0
+                    ? `In ${daysUntilPeriod} days`
+                    : daysUntilPeriod === 0
+                      ? 'Today'
+                      : `${Math.abs(daysUntilPeriod)} days ago`
+                  : '-'}
               </p>
             </div>
 
             <div className="space-y-3">
               <div className="flex items-center justify-between bg-gray-50 p-4 rounded-lg">
                 <span className="text-gray-700 font-medium">Confidence</span>
-                <span className={`text-2xl font-bold ${getConfidenceColor(prediction.confidence)}`}>{prediction.confidence}%</span>
+                <span className={`text-2xl font-bold ${getConfidenceColor(prediction.confidence)}`}>
+                  {prediction.confidence ?? '-'}%
+                </span>
               </div>
               <div className="flex items-center justify-between bg-gray-50 p-4 rounded-lg">
                 <span className="text-gray-700 font-medium">Cycle Day</span>
-                <span className="text-2xl font-bold text-purple-600">Day {prediction.cycle_day}</span>
+                <span className="text-2xl font-bold text-purple-600">
+                  Day {prediction.cycle_day ?? '-'}
+                </span>
               </div>
               <div className="flex items-center justify-between bg-gray-50 p-4 rounded-lg">
                 <span className="text-gray-700 font-medium">Method</span>
-                <span className="text-sm text-gray-600 capitalize">{prediction.method?.replace('_', ' ')}</span>
+                <span className="text-sm text-gray-600 capitalize">
+                  {prediction.method?.replace('_', ' ') ?? '-'}
+                </span>
               </div>
             </div>
           </div>
@@ -166,14 +186,20 @@ const PredictionsPage = () => {
               <p className="text-lg text-gray-600 mb-2">Next Ovulation Date</p>
               <p className="text-4xl font-bold text-red-500 mb-2">{formatDate(prediction.ovulation_date)}</p>
               <p className="text-xl text-gray-600">
-                {daysUntilOvulation > 0 ? `In ${daysUntilOvulation} days` : daysUntilOvulation === 0 ? 'Today' : `${Math.abs(daysUntilOvulation)} days ago`}
+                {typeof daysUntilOvulation === 'number'
+                  ? daysUntilOvulation > 0
+                    ? `In ${daysUntilOvulation} days`
+                    : daysUntilOvulation === 0
+                      ? 'Today'
+                      : `${Math.abs(daysUntilOvulation)} days ago`
+                  : '-'}
               </p>
             </div>
 
             <div className="flex items-center">
               <div className={`flex-1 p-6 rounded-xl ${getFertilityColor(prediction.fertility_status)}`}>
                 <p className="text-sm font-medium mb-2">Fertility Status</p>
-                <p className="text-3xl font-bold capitalize">{prediction.fertility_status}</p>
+                <p className="text-3xl font-bold capitalize">{prediction.fertility_status ?? '-'}</p>
               </div>
             </div>
           </div>
@@ -189,11 +215,11 @@ const PredictionsPage = () => {
           <div className="grid md:grid-cols-2 gap-6">
             <div className="bg-blue-50 p-6 rounded-xl">
               <p className="text-gray-700 mb-2">Average Cycle Length</p>
-              <p className="text-4xl font-bold text-blue-600">{prediction.avg_cycle_length} <span className="text-xl">days</span></p>
+              <p className="text-4xl font-bold text-blue-600">{prediction.avg_cycle_length ?? '-'} <span className="text-xl">days</span></p>
             </div>
             <div className="bg-purple-50 p-6 rounded-xl">
               <p className="text-gray-700 mb-2">Average Period Length</p>
-              <p className="text-4xl font-bold text-purple-600">{prediction.avg_period_length} <span className="text-xl">days</span></p>
+              <p className="text-4xl font-bold text-purple-600">{prediction.avg_period_length ?? '-'} <span className="text-xl">days</span></p>
             </div>
           </div>
         </div>
@@ -208,7 +234,8 @@ const PredictionsPage = () => {
           </button>
           <button
             onClick={fetchPrediction}
-            className="bg-gray-200 text-gray-700 px-8 py-3 rounded-lg hover:bg-gray-300 transition font-medium"
+            disabled={loading}
+            className="bg-gray-200 text-gray-700 px-8 py-3 rounded-lg hover:bg-gray-300 transition font-medium disabled:opacity-50"
           >
             Refresh Predictions
           </button>

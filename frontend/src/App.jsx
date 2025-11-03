@@ -7,16 +7,14 @@ import Dashboardpage from "./pages/Dashboardpage.jsx";
 import SymptomsPage from "./pages/SymptomsPage.jsx";
 import WaterIntake from "./pages/Waterintake.jsx";
 import PredictionsPage from './pages/Predictionpage.jsx';
-import { useAuth } from '@clerk/clerk-react';
 import Predictform from './pages/Predictform.jsx';
-
+import { useAuth0 } from '@auth0/auth0-react';
 
 // 🔒 ProtectedRoute Component
 function ProtectedRoute({ children }) {
-  const { isSignedIn, isLoaded } = useAuth();
-  console.log('User signed in?', isSignedIn, 'Loaded?', isLoaded);
-
-  if (!isLoaded) {
+  const { isAuthenticated, isLoading } = useAuth0();
+  
+  if (isLoading) {
     return (
       <div className="flex justify-center items-center h-screen">
         <div>Loading...</div>
@@ -24,7 +22,7 @@ function ProtectedRoute({ children }) {
     );
   }
 
-  if (!isSignedIn) {
+  if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
   }
 
@@ -33,9 +31,9 @@ function ProtectedRoute({ children }) {
 
 // 🌐 PublicRoute Component
 function PublicRoute({ children }) {
-  const { isSignedIn, isLoaded } = useAuth();
+  const { isAuthenticated, isLoading } = useAuth0();
 
-  if (!isLoaded) {
+  if (isLoading) {
     return (
       <div className="flex justify-center items-center h-screen">
         <div>Loading...</div>
@@ -43,8 +41,8 @@ function PublicRoute({ children }) {
     );
   }
 
-  if (isSignedIn) {
-    return <Navigate to="/" replace />;
+  if (isAuthenticated) {
+    return <Navigate to="/dashboard" replace />;
   }
 
   return children;
@@ -108,7 +106,8 @@ const App = () => {
             </ProtectedRoute>
           }
         />
-         <Route
+
+        <Route
           path="/predictionpage"
           element={
             <PublicRoute>

@@ -3,8 +3,6 @@ import { useNavigate } from 'react-router-dom';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
-console.log('🔧 API_BASE_URL:', API_BASE_URL); // This will show on page load
-
 export default function OnboardingForm() {
   const [formData, setFormData] = useState({
     avgCycleLength: '28',
@@ -56,7 +54,6 @@ export default function OnboardingForm() {
     }
 
     const requestData = {
-      user_id: 1,
       avg_cycle_length: formData.avgCycleLength,
       avg_period_length: formData.avgPeriodLength,
       previous_dates: filteredDates,

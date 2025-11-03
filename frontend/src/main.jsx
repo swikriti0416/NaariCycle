@@ -1,21 +1,22 @@
-import React from "react";
-import ReactDOM from "react-dom/client";
-import App from "./App.jsx";
-import "./index.css";
-import { BrowserRouter } from "react-router-dom";
-import { ClerkProvider } from '@clerk/clerk-react'
+import { StrictMode } from 'react';
+import { createRoot } from 'react-dom/client';
+import { BrowserRouter as Router } from 'react-router-dom';  // Import Router
+import './index.css'; // Importing the main CSS file
+import App from './App';
+import { Auth0Provider } from '@auth0/auth0-react';
 
-
-const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
-
-if (!PUBLISHABLE_KEY) {
-  throw new Error('Missing Publishable Key')
-}
-
-ReactDOM.createRoot(document.getElementById("root")).render(
-  <ClerkProvider publishableKey={PUBLISHABLE_KEY}>
-    <BrowserRouter>
-      <App />
-    </BrowserRouter>
-  </ClerkProvider>
+createRoot(document.getElementById('root')).render(
+  <StrictMode>
+    <Auth0Provider
+      domain={import.meta.env.VITE_AUTH0_DOMAIN}
+      clientId={import.meta.env.VITE_AUTH0_CLIENT_ID}
+      authorizationParams={{
+        redirect_uri: window.location.origin
+      }}
+    >
+      <Router> 
+        <App />
+      </Router>
+    </Auth0Provider>
+  </StrictMode>
 );

@@ -1,71 +1,49 @@
 import React, { useState } from "react";
-import { useSignUp, useClerk } from "@clerk/clerk-react";
+import { useAuth0 } from "@auth0/auth0-react"; // Importing the Auth0 hook
 import { Link, useNavigate } from "react-router-dom";
 import { FaGoogle, FaApple } from "react-icons/fa";
 
 function Signup() {
-  const { signUp, isLoaded } = useSignUp();
-  const { signOut } = useClerk();
+  const { loginWithRedirect, isAuthenticated, isLoading, user, error } = useAuth0();
   const navigate = useNavigate();
   const [form, setForm] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [signUpError, setSignUpError] = useState("");
   const [success, setSuccess] = useState(false);
 
-  if (!isLoaded) return null;
-
-  // Handle email/password signup WITHOUT auto-login
+  // Handle manual email/password signup using Auth0's Universal Login
   const handleSignup = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError("");
+    setSignUpError("");
 
     try {
-      // Create the user account
-      const result = await signUp.create({
-        emailAddress: form.email,
-        password: form.password,
+      // Trigger the Auth0 Universal Login (this is the signup and login page provided by Auth0)
+      await loginWithRedirect({
+        screen_hint: "signup", // This tells Auth0 to show the signup form by default
+        login_hint: form.email, // Pre-fill the email address
       });
-
-      // Check if sign-up is complete
-      if (result.status === "complete") {
-        // IMPORTANT: Sign out immediately to prevent auto-login
-        await signOut();
-        
-        // Show success message
-        setSuccess(true);
-        
-        // Redirect to login page after 2 seconds
-        setTimeout(() => {
-          navigate("/login");
-        }, 2000);
-      } else {
-        console.log("Sign-up status:", result.status);
-        setError("Account created but verification may be required. Please check your Clerk settings.");
-      }
     } catch (err) {
-      console.error("Signup error:", err.errors?.[0]?.message || err.message);
-      setError(err.errors?.[0]?.message || "Something went wrong!");
+      console.error("Signup error:", err);
+      setSignUpError("Something went wrong. Please try again!");
     } finally {
       setLoading(false);
     }
   };
 
-  // OAuth popup for Google / Apple (these will auto-login by default)
+  // OAuth login with Google / Apple
   const handleOAuthSignup = async (provider) => {
     try {
-      await signUp.authenticateWithRedirect({
-        strategy: `oauth_${provider}`,
-        redirectUrl: window.location.origin + "/sso-callback",
-        redirectUrlComplete: "/predict",
+      await loginWithRedirect({
+        connection: provider, // Specify the provider (google, apple)
       });
     } catch (err) {
       console.error("OAuth signup error:", err);
     }
   };
 
-  // Show success message after signup
-  if (success) {
+  // If the user is authenticated, we redirect to another page
+  if (isAuthenticated) {
     return (
       <div className="min-h-screen flex flex-col justify-center items-center w-full bg-pink-100 font-text px-4">
         <div className="w-full max-w-md rounded-2xl shadow-lg shadow-gray-300 bg-white/70 backdrop-blur-md border border-white/30 p-8 text-center">
@@ -76,25 +54,15 @@ function Signup() {
               </svg>
             </div>
             <h2 className="text-2xl font-bold text-[#325465] mb-2">Account Created!</h2>
-            <p className="text-gray-600">
-              Your account has been successfully created.
-              <br />
-              Redirecting to login page...
-            </p>
+            <p className="text-gray-600">You are now signed in!</p>
           </div>
-          <Link 
-            to="/login" 
-            className="text-[#0099ff] hover:underline font-semibold"
-          >
-            Click here if not redirected
-          </Link>
         </div>
       </div>
     );
   }
 
   return (
-    <div className=" flex flex-col justify-center items-center w-full bg-pink-100 font-text px-4 py-25">
+    <div className="flex flex-col justify-center items-center w-full bg-pink-100 font-text px-4 py-25">
       <div className="w-full max-w-md rounded-2xl backdrop-blur-sm shadow-lg shadow-gray-300 bg-pink-300 border border-white/30 p-8">
         {/* Header */}
         <div className="text-center mb-6">
@@ -159,7 +127,7 @@ function Signup() {
             />
           </div>
 
-          {error && <p className="text-red-500 text-sm text-center">{error}</p>}
+          {signUpError && <p className="text-red-500 text-sm text-center">{signUpError}</p>}
 
           <button
             type="submit"
