@@ -4,18 +4,8 @@ import { Link as ScrollLink, animateScroll as scroll } from "react-scroll";
 import { useAuth0 } from "@auth0/auth0-react";
 
 const Navbar = () => {
-  const { isAuthenticated, user, logout, isLoading } = useAuth0();  // Auth0 Hook
+  const { isAuthenticated, user, logout } = useAuth0();  // Auth0 Hook
   const location = useLocation();
-
-  // Debug logging
-  useEffect(() => {
-    console.log("=== NAVBAR AUTH DEBUG ===");
-    console.log("isLoading:", isLoading);
-    console.log("isAuthenticated:", isAuthenticated);
-    console.log("user:", user);
-    console.log("user image:", user?.picture);
-    console.log("========================");
-  }, [isLoading, isAuthenticated, user]);
 
   const navData = [
     { label: "Home", to: "hero", route: "/" },
@@ -27,17 +17,6 @@ const Navbar = () => {
 
   const isHome = location.pathname === "/";
   const fallbackImage = "https://www.gravatar.com/avatar/?d=mp&f=y";
-
-  // Show loading state
-  if (isLoading) {
-    return (
-      <nav className="bg-linear-to-r from-pink-900 to-pink-400 sticky top-0 z-50">
-        <div className="flex justify-center items-center py-6 text-white">
-          Loading...
-        </div>
-      </nav>
-    );
-  }
 
   return (
     <nav className="bg-linear-to-r from-pink-900 to-pink-400 sticky top-0 z-50">

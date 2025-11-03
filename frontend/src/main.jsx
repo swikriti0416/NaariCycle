@@ -13,8 +13,10 @@ createRoot(document.getElementById('root')).render(
       authorizationParams={{
         redirect_uri: window.location.origin
       }}
+      useRefreshTokens={true}  
+      cacheLocation="localstorage" 
     >
-      <Router> 
+      <Router>
         <App />
       </Router>
     </Auth0Provider>

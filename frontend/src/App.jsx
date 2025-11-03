@@ -9,6 +9,7 @@ import WaterIntake from "./pages/Waterintake.jsx";
 import PredictionsPage from './pages/Predictionpage.jsx';
 import Predictform from './pages/Predictform.jsx';
 import { useAuth0 } from '@auth0/auth0-react';
+import { ToastContainer } from 'react-toastify';
 
 // 🔒 ProtectedRoute Component
 function ProtectedRoute({ children }) {
@@ -119,120 +120,9 @@ const App = () => {
         {/* Fallback */}
         <Route path="*" element={<HomePage />} />
       </Routes>
+      <ToastContainer />
     </>
   );
 };
 
 export default App;
-
-// import { Routes, Route, Navigate } from 'react-router-dom';
-// import Navbar from "./components/Navbar";
-// import HomePage from "./pages/HomePage.jsx";
-// import Login from "./pages/auth/loginpage.jsx";
-// import Register from "./pages/auth/signup.jsx"; // Assuming signup.jsx is now named Register
-// import Dashboardpage from "./pages/Dashboardpage.jsx";
-// import SymptomsPage from "./pages/SymptomsPage.jsx";
-// import WaterIntake from "./pages/Waterintake.jsx";
-// import PredictionsPage from './pages/Predictionpage.jsx';
-// import { useAuth } from '@clerk/clerk-react';
-// import Predictform from './pages/Predictform.jsx';
-
-// // 🔒 ProtectedRoute Component (Kept for later use)
-// function ProtectedRoute({ children }) {
-//   const { isSignedIn, isLoaded } = useAuth();
-//   console.log('User signed in?', isSignedIn, 'Loaded?', isLoaded);
-
-//   if (!isLoaded) {
-//     return (
-//       <div className="flex justify-center items-center h-screen">
-//         <div>Loading...</div>
-//       </div>
-//     );
-//   }
-
-//   if (!isSignedIn) {
-//     return <Navigate to="/login" replace />;
-//   }
-
-//   return children;
-// }
-
-// // 🌐 PublicRoute Component (Kept for later use)
-// function PublicRoute({ children }) {
-//   const { isSignedIn, isLoaded } = useAuth();
-
-//   if (!isLoaded) {
-//     return (
-//       <div className="flex justify-center items-center h-screen">
-//         <div>Loading...</div>
-//       </div>
-//     );
-//   }
-
-//   if (isSignedIn) {
-//     return <Navigate to="/" replace />;
-//   }
-
-//   return children;
-// }
-
-// // 🌟 Main App Component
-// const App = () => {
-//   return (
-//     <>
-//       <Navbar />
-//       <Routes>
-//         {/* --- Public Routes --- */}
-//         <Route path="/" element={<HomePage />} />
-//         <Route
-//           path="/login"
-//           element={
-//             <PublicRoute>
-//               <Login />
-//             </PublicRoute>
-//           }
-//         />
-//         <Route
-//           path="/signup"
-//           element={
-//             <PublicRoute>
-//               <Register />
-//             </PublicRoute>
-//           }
-//         />
-//          <Route
-//           path="/predictionpage"
-//           element={
-//             // This was public before, keeping it that way
-//             <PublicRoute>
-//               <PredictionsPage />
-//             </PublicRoute>
-//           }
-//         />
-
-//         {/* --- Temporarily Public Routes (Protection Removed) --- */}
-//         <Route
-//           path="/dashboard"
-//           element={<Dashboardpage />} // Protection removed
-//         />
-//         <Route
-//           path="/symptoms"
-//           element={<SymptomsPage />} // Protection removed
-//         />
-//         <Route
-//           path="/waterintake"
-//           element={<WaterIntake />} // Protection removed
-//         />
-//         <Route
-//           path="/prediction"
-//           element={<Predictform />} // Protection removed
-//         />
-
-//         {/* Fallback */}
-//         <Route path="*" element={<HomePage />} />
-//       </Routes>
-//     </>
-//   );
-// };
-
-// export default App;
