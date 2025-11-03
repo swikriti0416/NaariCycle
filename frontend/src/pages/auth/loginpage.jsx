@@ -1,57 +1,48 @@
-// src/pages/LoginPage.jsx
 import React, { useState } from "react";
-import { useSignIn } from "@clerk/clerk-react";
+import { useAuth0 } from "@auth0/auth0-react"; // Import the Auth0 hook
 import { FcGoogle } from "react-icons/fc";
 import { FaApple, FaFacebook } from "react-icons/fa6";
 
 export default function LoginPage() {
-  const { isLoaded, signIn, setActive } = useSignIn();
+  const { loginWithRedirect, isAuthenticated, isLoading, user, error } = useAuth0();
   const [form, setForm] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [loginError, setLoginError] = useState("");
 
-  if (!isLoaded) return null;
-
-  // Email/password login
+  // Email/password login (optional with Auth0, usually OAuth is preferred)
   const handleEmailLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError("");
+    setLoginError("");
 
     try {
-      const signInResult = await signIn.create({
-        identifier: form.email,
-        password: form.password,
+      // Handle login with Auth0's Universal Login page
+      await loginWithRedirect({
+        login_hint: form.email, // Optional: pre-fill the email field in the Auth0 login page
       });
-
-      if (signInResult.status === "complete") {
-        await setActive({ session: signInResult.createdSessionId });
-        window.location.href = "/Homepage";
-      } else {
-        setError("Please verify your email or complete login.");
-      }
     } catch (err) {
       console.error("Login error:", err);
-      setError(err.errors?.[0]?.message || "Invalid email or password.");
+      setLoginError("Failed to log in. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
-  // OAuth login
+  // OAuth login (Google, Apple, Facebook)
   const handleOAuth = async (provider) => {
-    setError("");
+    setLoginError("");
     try {
-      await signIn.authenticateWithRedirect({
-        strategy: provider,
-        redirectUrl: "/Homepage", // Redirect directly to homepage
-        redirectUrlComplete: "/Homepage",
+      // Trigger OAuth login redirect
+      await loginWithRedirect({
+        connection: provider, // Google, Apple, Facebook, etc.
       });
     } catch (err) {
-      console.error("OAuth redirect error:", err);
-      setError("OAuth login failed. Please try again.");
+      console.error("OAuth login error:", err);
+      setLoginError("OAuth login failed. Please try again.");
     }
   };
+
+  if (isLoading) return <div>Loading...</div>; // Show loading state while Auth0 is determining authentication status
 
   return (
     <div className="flex flex-col justify-center items-center bg-pink-100 font-text px-4 py-16 min-h-screen">
@@ -59,9 +50,7 @@ export default function LoginPage() {
         {/* Header */}
         <div className="text-center">
           <h1 className="text-3xl font-bold text-[#1d1d22] mb-2">Welcome Back</h1>
-          <p className="text-sm text-[#ffffff] font-medium">
-            Sign in to your health hub!
-          </p>
+          <p className="text-sm text-[#ffffff] font-medium">Sign in to your health hub!</p>
         </div>
 
         {/* Email/Password Form */}
@@ -83,7 +72,7 @@ export default function LoginPage() {
             required
           />
 
-          {error && <p className="text-red-500 text-sm text-center font-medium">{error}</p>}
+          {loginError && <p className="text-red-500 text-sm text-center font-medium">{loginError}</p>}
 
           <button
             type="submit"
@@ -106,7 +95,7 @@ export default function LoginPage() {
         {/* OAuth Buttons */}
         <div className="flex flex-col gap-3">
           <button
-            onClick={() => handleOAuth("oauth_google")}
+            onClick={() => handleOAuth("google")}
             className="flex items-center justify-center gap-2 bg-white border border-gray-300 hover:bg-gray-50 rounded-lg py-2 transition duration-200"
           >
             <FcGoogle size={20} />
@@ -114,7 +103,7 @@ export default function LoginPage() {
           </button>
 
           <button
-            onClick={() => handleOAuth("oauth_apple")}
+            onClick={() => handleOAuth("apple")}
             className="flex items-center justify-center gap-2 bg-black text-white rounded-lg py-2 hover:bg-gray-900 transition duration-200"
           >
             <FaApple size={20} />
@@ -122,7 +111,7 @@ export default function LoginPage() {
           </button>
 
           <button
-            onClick={() => handleOAuth("oauth_facebook")}
+            onClick={() => handleOAuth("facebook")}
             className="flex items-center justify-center gap-2 bg-white border border-gray-300 hover:bg-gray-50 rounded-lg py-2 transition duration-200"
           >
             <FaFacebook size={20} color="blue" />

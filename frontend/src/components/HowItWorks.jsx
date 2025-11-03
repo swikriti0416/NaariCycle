@@ -69,7 +69,7 @@ export default function HowItWorks() {
             >
               {/* Icon */}
               <div className="relative mb-8">
-                <div className="w-20 h-20 bg-gradient-to-r from-pink-600 to-pink-400 rounded-full flex items-center justify-center shadow-lg">
+                <div className="w-20 h-20 bg-linear-to-r from-pink-600 to-pink-400 rounded-full flex items-center justify-center shadow-lg">
                   {step.icon}
                 </div>
                 <div className="absolute -bottom-2 -right-2 w-8 h-8 rounded-full bg-pink-600 text-white flex items-center justify-center font-bold border-4 border-white">

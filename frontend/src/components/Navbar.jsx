@@ -1,22 +1,21 @@
-import { useAuth, useUser, SignOutButton } from "@clerk/clerk-react";
 import React, { useState, useEffect } from "react";
 import { Link as RouterLink, useLocation } from "react-router-dom";
 import { Link as ScrollLink, animateScroll as scroll } from "react-scroll";
+import { useAuth0 } from "@auth0/auth0-react";
 
 const Navbar = () => {
-  const { isSignedIn, isLoaded } = useAuth();
-  const { user } = useUser();
+  const { isAuthenticated, user, logout, isLoading } = useAuth0();  // Auth0 Hook
   const location = useLocation();
 
   // Debug logging
   useEffect(() => {
     console.log("=== NAVBAR AUTH DEBUG ===");
-    console.log("isLoaded:", isLoaded);
-    console.log("isSignedIn:", isSignedIn);
+    console.log("isLoading:", isLoading);
+    console.log("isAuthenticated:", isAuthenticated);
     console.log("user:", user);
-    console.log("user imageUrl:", user?.imageUrl);
+    console.log("user image:", user?.picture);
     console.log("========================");
-  }, [isLoaded, isSignedIn, user]);
+  }, [isLoading, isAuthenticated, user]);
 
   const navData = [
     { label: "Home", to: "hero", route: "/" },
@@ -30,9 +29,9 @@ const Navbar = () => {
   const fallbackImage = "https://www.gravatar.com/avatar/?d=mp&f=y";
 
   // Show loading state
-  if (!isLoaded) {
+  if (isLoading) {
     return (
-      <nav className="bg-gradient-to-r from-pink-900 to-pink-400 sticky top-0 z-50">
+      <nav className="bg-linear-to-r from-pink-900 to-pink-400 sticky top-0 z-50">
         <div className="flex justify-center items-center py-6 text-white">
           Loading...
         </div>
@@ -41,7 +40,7 @@ const Navbar = () => {
   }
 
   return (
-    <nav className="bg-gradient-to-r from-pink-900 to-pink-400 sticky top-0 z-50">
+    <nav className="bg-linear-to-r from-pink-900 to-pink-400 sticky top-0 z-50">
       <div className="flex items-center justify-between px-8 py-4 max-w-7xl mx-auto">
         <RouterLink
           to="/"
@@ -77,30 +76,31 @@ const Navbar = () => {
           )}
         </div>
 
-        {/* Desktop Auth - WITH DEBUG */}
+        {/* Desktop Auth */}
         <div className="hidden md:flex items-center gap-4">
-          {/* Debug indicator - REMOVE AFTER TESTING */}
-          
-          {isSignedIn ? (
+          {/* Debug indicator */}
+          {isAuthenticated ? (
             <div className="relative group">
               <RouterLink to="/dashboard">
                 <img
-                  src={user?.imageUrl || fallbackImage}
-                  alt={user?.firstName || "Profile"}
+                  src={user?.picture || fallbackImage}
+                  alt={user?.name || "Profile"}
                   className="w-10 h-10 rounded-full object-cover cursor-pointer border-2 border-white hover:border-pink-200 transition-all"
                   onError={(e) => {
-                    console.error("Image failed to load:", user?.imageUrl);
+                    console.error("Image failed to load:", user?.picture);
                     e.target.src = fallbackImage;
                   }}
                 />
               </RouterLink>
 
+              {/* Logout Button */}
               <div className="absolute top-12 left-1/2 transform -translate-x-1/2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 ease-in-out z-50">
-                <SignOutButton>
-                  <button className="bg-white text-pink-700 hover:bg-pink-100 text-sm px-4 py-2 rounded-lg shadow-lg transition whitespace-nowrap">
-                    Logout
-                  </button>
-                </SignOutButton>
+                <button
+                  onClick={() => logout({ returnTo: window.location.origin })}
+                  className="bg-white text-pink-700 hover:bg-pink-100 text-sm px-4 py-2 rounded-lg shadow-lg transition whitespace-nowrap"
+                >
+                  Logout
+                </button>
               </div>
             </div>
           ) : (

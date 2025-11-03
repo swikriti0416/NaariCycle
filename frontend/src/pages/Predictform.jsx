@@ -1,16 +1,17 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Calendar, PlusCircle, MinusCircle, Info } from 'lucide-react';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
-console.log('🔧 API_BASE_URL:', API_BASE_URL); // This will show on page load
+console.log('🔧 API_BASE_URL:', API_BASE_URL);
 
 export default function OnboardingForm() {
   const [formData, setFormData] = useState({
     avgCycleLength: '28',
     avgPeriodLength: '5',
   });
-  
+
   const [dateInputs, setDateInputs] = useState(['', '', '']);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
@@ -19,7 +20,7 @@ export default function OnboardingForm() {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleDateChange = (e, index) => {
@@ -47,8 +48,7 @@ export default function OnboardingForm() {
     setIsSubmitting(true);
     setError('');
 
-    const filteredDates = dateInputs.filter(date => date !== '');
-
+    const filteredDates = dateInputs.filter((date) => date !== '');
     if (filteredDates.length < 2) {
       setError('Please provide at least two dates.');
       setIsSubmitting(false);
@@ -72,15 +72,11 @@ export default function OnboardingForm() {
     try {
       const response = await fetch(fullUrl, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(requestData),
       });
 
       console.log('✅ Response Status:', response.status);
-      console.log('✅ Response URL:', response.url);
-      console.log('✅ Response OK:', response.ok);
 
       if (!response.ok) {
         const errorText = await response.text();
@@ -95,9 +91,7 @@ export default function OnboardingForm() {
         throw new Error(result.error);
       }
 
-      // Navigate to the predictions page
       navigate('/Predictionpage', { state: { prediction: result.prediction } });
-
     } catch (error) {
       console.error('❌ Submission error:', error);
       setError(`Error: ${error.message}`);
@@ -107,52 +101,76 @@ export default function OnboardingForm() {
   };
 
   return (
-    <div className="p-8 bg-white shadow rounded-lg w-full max-w-xl mx-auto">
-      <h1 className="text-2xl font-semibold mb-6">Cycle Prediction Setup</h1>
-      <form onSubmit={handleSubmit}>
-        <div className="mb-4">
-          <label htmlFor="avgCycleLength" className="block text-sm font-medium mb-2">Average Cycle Length</label>
+    <div className="p-8 bg-gradient-to-br from-pink-50 to-pink-100 rounded-2xl shadow-lg w-full max-w-xl mx-auto">
+      <h1 className="text-3xl font-semibold mb-6 text-center text-pink-700">
+        Tell us about your cycle
+      </h1>
+      <p className="text-center text-gray-600 mb-6">
+        This helps us make accurate predictions.
+      </p>
+
+      <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Average Cycle Length */}
+        <div>
+          <label htmlFor="avgCycleLength" className="block text-sm font-medium mb-2 text-gray-700">
+            Average Cycle Length (days)
+          </label>
           <input
             id="avgCycleLength"
             name="avgCycleLength"
             type="number"
             value={formData.avgCycleLength}
             onChange={handleInputChange}
-            className="w-full p-3 border rounded-md shadow-sm focus:outline-none"
+            className="w-full p-3 border border-pink-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-pink-400"
             min="1"
           />
+          <p className="flex items-start text-xs text-gray-500 mt-1">
+            <Info className="w-4 h-4 mr-1 text-gray-400 mt-0.5" />
+            The number of days from the start of one period to the start of the next (typically 21–35 days)
+          </p>
         </div>
 
-        <div className="mb-4">
-          <label htmlFor="avgPeriodLength" className="block text-sm font-medium mb-2">Average Period Length</label>
+        {/* Average Period Length */}
+        <div>
+          <label htmlFor="avgPeriodLength" className="block text-sm font-medium mb-2 text-gray-700">
+            Average Period Length (days)
+          </label>
           <input
             id="avgPeriodLength"
             name="avgPeriodLength"
             type="number"
             value={formData.avgPeriodLength}
             onChange={handleInputChange}
-            className="w-full p-3 border rounded-md shadow-sm focus:outline-none"
+            className="w-full p-3 border border-pink-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-pink-400"
             min="1"
           />
+          <p className="flex items-start text-xs text-gray-500 mt-1">
+            <Info className="w-4 h-4 mr-1 text-gray-400 mt-0.5" />
+            How many days your period usually lasts (typically 3–7 days)
+          </p>
         </div>
 
-        <div className="mb-6">
-          <label htmlFor="previousDates" className="block text-sm font-medium mb-2">Previous Period Dates</label>
+        {/* Previous Period Dates */}
+        <div>
+          <label htmlFor="previousDates" className="block text-sm font-medium mb-2 text-gray-700">
+            Previous Period Start Dates
+          </label>
           {dateInputs.map((date, index) => (
-            <div key={index} className="flex space-x-2 mb-2">
+            <div key={index} className="flex items-center space-x-2 mb-2">
+              <Calendar className="text-pink-500 w-5 h-5" />
               <input
                 type="date"
                 value={date}
                 onChange={(e) => handleDateChange(e, index)}
-                className="w-full p-3 border rounded-md shadow-sm focus:outline-none"
+                className="w-full p-3 border border-pink-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-pink-400"
               />
               {dateInputs.length > 2 && (
                 <button
                   type="button"
                   onClick={() => handleRemoveDate(index)}
-                  className="text-red-500 hover:text-red-700 px-3"
+                  className="text-red-500 hover:text-red-700 transition"
                 >
-                  Remove
+                  <MinusCircle className="w-5 h-5" />
                 </button>
               )}
             </div>
@@ -161,21 +179,26 @@ export default function OnboardingForm() {
             <button
               type="button"
               onClick={handleAddDate}
-              className="text-blue-500 hover:text-blue-700 mt-2"
+              className="flex items-center text-pink-600 hover:text-pink-800 mt-2 text-sm font-medium transition"
             >
-              + Add another date
+              <PlusCircle className="w-5 h-5 mr-1" />
+              Add another date
             </button>
           )}
+          <p className="flex items-start text-xs text-gray-500 mt-2">
+            <Info className="w-4 h-4 mr-1 text-gray-400 mt-0.5" />
+            Enter at least 2–3 previous period start dates for better predictions. More dates = more accuracy!
+          </p>
         </div>
 
-        {error && <div className="text-red-500 mb-4 p-3 bg-red-50 rounded">{error}</div>}
+        {error && <div className="text-red-600 p-3 bg-red-50 rounded-md">{error}</div>}
 
         <button
           type="submit"
           disabled={isSubmitting}
-          className="w-full bg-blue-600 text-white py-3 rounded-md shadow-md hover:bg-blue-700 disabled:bg-gray-400"
+          className="w-full bg-gradient-to-r from-pink-500 to-fuchsia-600 text-white py-3 rounded-lg shadow-md hover:opacity-90 transition disabled:bg-gray-400"
         >
-          {isSubmitting ? 'Submitting...' : 'Submit'}
+          {isSubmitting ? 'Submitting...' : 'Generate My Prediction'}
         </button>
       </form>
     </div>
