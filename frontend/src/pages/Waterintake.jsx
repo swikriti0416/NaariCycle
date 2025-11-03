@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { toast } from "react-toastify";
 
 export default function WaterIntake() {
   const [waterIntake, setWaterIntake] = useState(0);
@@ -82,7 +83,7 @@ export default function WaterIntake() {
       {/* Congrats message */}
       {waterIntake === dailyGoal && (
         <div className="bg-green-500 text-white font-semibold p-4 rounded-md mb-6 text-center">
-          🎉 Great job! You've reached your daily water goal!
+          {toast.success('🎉 Great job! You ve reached your daily water goal!')}
         </div>
       )}
 
