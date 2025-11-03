@@ -121,15 +121,18 @@ def train_predict_model(avg_cycle_length, avg_period_length, previous_dates):
     if not previous_dates:
         raise ValueError("Previous dates are required to make predictions")
 
+    # Convert strings to datetime objects and sort
     prev_dates = sorted([datetime.strptime(date, "%Y-%m-%d") for date in previous_dates])
     avg_cycle_length = int(avg_cycle_length)
     avg_period_length = int(avg_period_length)
 
+    # Calculate average cycle and confidence
     if len(prev_dates) > 1:
         days_between_periods = [(prev_dates[i] - prev_dates[i - 1]).days for i in range(1, len(prev_dates))]
         calculated_avg_cycle = np.mean(days_between_periods)
         std_dev = np.std(days_between_periods)
-        confidence = max(60, min(95, 95 - (std_dev * 3)))
+        confidence = max(60, min(95, 95 - (std_dev * 3)))  # Confidence decreases with irregularity
+        # Decide prediction method
         method = "linear_regression" if abs(calculated_avg_cycle - avg_cycle_length) > 3 else "average_cycle"
         if method == "linear_regression":
             avg_cycle_length = calculated_avg_cycle
@@ -137,23 +140,42 @@ def train_predict_model(avg_cycle_length, avg_period_length, previous_dates):
         confidence = 70
         method = "single_cycle"
 
+    # Predict next period start
     last_period = prev_dates[-1]
     predicted_start = last_period + timedelta(days=int(avg_cycle_length))
+
+    # Calculate current cycle day
     today = datetime.now()
     cycle_day = (today - last_period).days + 1
     cycle_day = max(1, min(cycle_day, int(avg_cycle_length)))
 
+    # Predict ovulation date (typically 14 days before next period)
     ovulation_date = predicted_start - timedelta(days=14)
-    days_to_ovulation = (ovulation_date - today).days
 
-    if -1 <= days_to_ovulation <= 1:
+    # Fertility window: 5 days before ovulation + ovulation day
+    fertility_window_start = ovulation_date - timedelta(days=5)
+    fertility_window_end = ovulation_date
+
+    # Medium buffer ±2 days around fertility window
+    medium_window_start = fertility_window_start - timedelta(days=2)
+    medium_window_end = fertility_window_end + timedelta(days=2)
+
+    # Determine fertility status
+    if fertility_window_start <= today <= fertility_window_end:
         fertility_status = "High"
-    elif -3 <= days_to_ovulation <= 3:
+    elif medium_window_start <= today <= medium_window_end:
         fertility_status = "Medium"
     else:
         fertility_status = "Low"
 
-    return predicted_start.date(), cycle_day, ovulation_date.date(), fertility_status, round(confidence, 1), method
+    return (
+        predicted_start.date(),
+        cycle_day,
+        ovulation_date.date(),
+        fertility_status,
+        round(confidence, 1),
+        method
+    )
 
 # -----------------------------------------------
 # 🔹 Routes
