@@ -1,16 +1,24 @@
+import json
+import os
+import requests
 import psycopg2
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-import pandas as pd
-import numpy as np
+from jose import jwt
 from datetime import datetime, timedelta
-import json
-import os
-from dotenv import load_dotenv
+import numpy as np
+from functools import wraps
 import traceback
+from dotenv import load_dotenv
 
+# Load environment variables
 load_dotenv()
 DATABASE_URL = os.getenv("DATABASE_URL")
+
+# Auth0 Configuration
+AUTH0_DOMAIN = os.getenv('AUTH0_DOMAIN')  # Replace with your Auth0 domain
+API_IDENTIFIER = os.getenv('API_IDENTIFIER')  # Replace with your API identifier
+ALGORITHMS = ['RS256']  # The algorithm Auth0 uses to sign the token
 
 app = Flask(__name__)
 CORS(app, supports_credentials=True)  # Enable CORS for all routes
@@ -19,6 +27,69 @@ CORS(app, supports_credentials=True)  # Enable CORS for all routes
 def get_db_connection():
     conn = psycopg2.connect(DATABASE_URL)
     return conn
+
+# Fetch Auth0 public keys for JWT verification
+def get_jwk():
+    url = f'https://{AUTH0_DOMAIN}/.well-known/jwks.json'
+    response = requests.get(url)
+    return response.json()
+
+# Decode and verify the JWT token
+def verify_jwt(token):
+    try:
+        unverified_header = jwt.get_unverified_header(token)
+        if unverified_header is None:
+            raise Exception("Token has no header")
+
+        rsa_key = {}
+        if 'kid' in unverified_header:
+            for key in get_jwk()['keys']:
+                if key['kid'] == unverified_header['kid']:
+                    rsa_key = {
+                        'kty': key['kty'],
+                        'kid': key['kid'],
+                        'use': key['use'],
+                        'n': key['n'],
+                        'e': key['e']
+                    }
+
+        if rsa_key:
+            payload = jwt.decode(
+                token,
+                rsa_key,
+                algorithms=ALGORITHMS,
+                audience=API_IDENTIFIER,
+                issuer=f'https://{AUTH0_DOMAIN}/'
+            )
+            return payload  # This contains the user's details, including `sub` (user_id)
+        else:
+            raise Exception('Unable to find appropriate key')
+
+    except Exception as e:
+        raise Exception(f'Error verifying token: {str(e)}')
+
+# Decorator to require authentication for an endpoint
+def requires_auth(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        token = None
+        if 'Authorization' in request.headers:
+            token = request.headers['Authorization'].split()[1]  # Remove 'Bearer' part
+
+        if not token:
+            return jsonify({"error": "Authorization token is missing"}), 401
+
+        try:
+            payload = verify_jwt(token)
+            # You can extract the user_id (sub) here and pass it to your endpoint
+            user_id = payload.get('sub')  # The 'sub' claim in the JWT contains the Auth0 user ID
+            request.user_id = user_id
+        except Exception as e:
+            return jsonify({"error": str(e)}), 401
+
+        return f(*args, **kwargs)
+
+    return decorated_function
 
 # Confidence calculation
 def calculate_confidence(previous_dates, avg_cycle_length):
@@ -95,9 +166,11 @@ def health_check():
         return jsonify({"status": "unhealthy", "database": "disconnected", "error": str(e)}), 500
 
 # GET latest prediction
-@app.route('/predictions/<user_id>', methods=['GET'])
-def get_prediction(user_id):
+@app.route('/predictions', methods=['GET'])
+@requires_auth
+def get_prediction():
     try:
+        user_id = request.user_id  # Extracted from JWT token
         conn = get_db_connection()
         cur = conn.cursor()
         cur.execute("""
@@ -144,6 +217,7 @@ def get_prediction(user_id):
 
 # POST onboarding
 @app.route('/onboarding', methods=['POST', 'OPTIONS'])
+@requires_auth
 def onboarding():
     if request.method == 'OPTIONS':
         return '', 204
@@ -152,12 +226,12 @@ def onboarding():
         if not data:
             return jsonify({"error": "No data received"}), 400
 
-        user_id = data.get('user_id')
+        user_id = request.user_id  # From Auth0
         avg_cycle_length = data.get('avg_cycle_length')
         avg_period_length = data.get('avg_period_length')
         previous_dates = data.get('previous_dates')
 
-        if not all([user_id, avg_cycle_length, avg_period_length, previous_dates]):
+        if not all([avg_cycle_length, avg_period_length, previous_dates]):
             return jsonify({"error": "Missing required fields"}), 400
 
         conn = get_db_connection()
@@ -212,4 +286,3 @@ if __name__ == '__main__':
     print("=" * 50)
     print("🚀 Flask Server Stopped")
     print("=" * 50)
-    
