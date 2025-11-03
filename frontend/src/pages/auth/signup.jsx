@@ -92,9 +92,9 @@ function Signup() {
 
         {/* Divider */}
         <div className="flex items-center my-4">
-          <div className="flex-grow border-t border-gray-300"></div>
+          <div className="grow border-t border-gray-300"></div>
           <span className="mx-3 text-gray-500 text-sm">or</span>
-          <div className="flex-grow border-t border-gray-300"></div>
+          <div className="grow border-t border-gray-300"></div>
         </div>
 
         {/* Email Signup Form */}

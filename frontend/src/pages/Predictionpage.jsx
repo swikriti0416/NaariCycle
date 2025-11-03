@@ -81,7 +81,7 @@ const PredictionsPage = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-pink-50 via-purple-50 to-blue-50">
+      <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-pink-50 via-purple-50 to-blue-50">
         <div className="text-center">
           <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-pink-600 mx-auto mb-4"></div>
           <p className="text-gray-600 text-lg">Loading your predictions...</p>
@@ -92,7 +92,7 @@ const PredictionsPage = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-pink-50 via-purple-50 to-blue-50 p-4">
+      <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-pink-50 via-purple-50 to-blue-50 p-4">
         <div className="bg-white rounded-xl shadow-lg p-8 max-w-md w-full text-center">
           <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
           <h2 className="text-2xl font-bold text-gray-900 mb-2">Oops!</h2>
@@ -110,7 +110,7 @@ const PredictionsPage = () => {
 
   if (!prediction) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-pink-50 via-purple-50 to-blue-50">
+      <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-pink-50 via-purple-50 to-blue-50">
         <p className="text-gray-600">No prediction data available.</p>
       </div>
     );
@@ -120,7 +120,7 @@ const PredictionsPage = () => {
   const daysUntilOvulation = getDaysUntil(prediction.ovulation_date);
 
   return (
-    <div className="min-h-screen py-10 px-4 bg-gradient-to-br from-pink-50 via-purple-50 to-blue-50">
+    <div className="min-h-screen py-10 px-4 bg-linear-to-br from-pink-50 via-purple-50 to-blue-50">
       <div className="container mx-auto max-w-5xl">
         {/* Header */}
         <div className="text-center mb-12">

@@ -31,7 +31,7 @@ const Navbar = () => {
   // Show loading state
   if (isLoading) {
     return (
-      <nav className="bg-gradient-to-r from-pink-900 to-pink-400 sticky top-0 z-50">
+      <nav className="bg-linear-to-r from-pink-900 to-pink-400 sticky top-0 z-50">
         <div className="flex justify-center items-center py-6 text-white">
           Loading...
         </div>
@@ -40,7 +40,7 @@ const Navbar = () => {
   }
 
   return (
-    <nav className="bg-gradient-to-r from-pink-900 to-pink-400 sticky top-0 z-50">
+    <nav className="bg-linear-to-r from-pink-900 to-pink-400 sticky top-0 z-50">
       <div className="flex items-center justify-between px-8 py-4 max-w-7xl mx-auto">
         <RouterLink
           to="/"
